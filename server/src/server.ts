@@ -15,6 +15,8 @@ import { AnimePostResolver } from "./resolvers/animePost";
 import { AnimePost } from "./Entities/AnimePost";
 import { User } from "./Entities/User";
 import { UserResolver } from "./resolvers/user";
+import { PorfileResolver } from "./resolvers/profile";
+import { Profile } from "./Entities/Profile";
 
 //declare this for the session
 declare module "express-session" {
@@ -24,6 +26,7 @@ declare module "express-session" {
 }
 
 const main = async () => {
+  //typeorm
   const connection = await createConnection({
     type: "postgres",
     database: "otaku",
@@ -31,12 +34,14 @@ const main = async () => {
     password: "xxkaa548",
     logging: true,
     synchronize: true,
-    entities: [AnimePost, User],
+    entities: [AnimePost, User, Profile],
   });
-
+  // await AnimePost.delete({});
+  // await User.delete({});
+  //run
   const app = express();
 
-  //2 cookie
+  //2 cookie Redis
   const RedisStore = connectRedis(session);
   const redis = new Redis();
   app.use(
@@ -69,7 +74,12 @@ const main = async () => {
   //for GRAPHQL
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, AnimePostResolver, UserResolver],
+      resolvers: [
+        HelloResolver,
+        AnimePostResolver,
+        UserResolver,
+        PorfileResolver,
+      ],
       validate: false,
     }),
     //to access an object

@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -17,7 +19,15 @@ export class AnimePost extends BaseEntity {
 
   @Field()
   @Column()
-  anime!: string;
+  title!: string;
+
+  //OWNER FIELD
+  @Field()
+  @Column()
+  creatorId!: number;
+
+  @ManyToOne(() => User, (user) => user.animePost)
+  creator: User;
 
   @Field()
   @Column()
@@ -25,11 +35,19 @@ export class AnimePost extends BaseEntity {
 
   @Field()
   @Column()
-  genre!: string;
+  rated!: string;
+
+  @Field()
+  @Column()
+  synopsis!: string;
 
   @Field(() => Int)
   @Column()
-  year!: number;
+  score!: number;
+
+  @Field()
+  @Column()
+  imageUrl!: string;
 
   @Field(() => String)
   @CreateDateColumn()

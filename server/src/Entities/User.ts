@@ -4,10 +4,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { AnimePost } from "./AnimePost";
+import { Profile } from "./Profile";
 
 @ObjectType()
 @Entity()
@@ -28,9 +32,13 @@ export class User extends BaseEntity {
   @Column({ default: "confidential" })
   password!: string;
 
-  //   //POSTS
-  //   @OneToMany(() => Post, (post) => post.creator)
-  //   posts: Post[];
+  @OneToOne(() => Profile, (profile) => profile.user)
+  @JoinColumn()
+  profile: Profile;
+
+  //POSTS
+  @OneToMany(() => AnimePost, (animePost) => animePost.creator)
+  animePost: AnimePost[];
 
   @Field(() => String)
   @CreateDateColumn()

@@ -7,14 +7,26 @@
     "start": "next start"
   },
   "dependencies": {
+    "@apollo/client": "^3.3.11",
     "@chakra-ui/icons": "^1.0.0",
     "@chakra-ui/react": "^1.0.0",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
+    "@urql/exchange-graphcache": "^4.0.0",
+    "add": "^2.0.6",
+    "apollo-cache-persist": "^0.1.1",
+    "apollo3-cache-persist": "^0.9.1",
+    "formik": "^2.2.6",
     "framer-motion": "^2.9.4",
+    "graphql": "^15.5.0",
+    "isomorphic-unfetch": "^3.1.0",
     "next": "latest",
+    "next-apollo": "^5.0.4",
+    "next-urql": "^3.0.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-is": "^17.0.1",
+    "unirest": "^0.6.0"
   },
   "license": "MIT",
   "devDependencies": {
