@@ -1,0 +1,30 @@
+mutation createAnimePost(
+  $title: String!
+  $creatorId: Int!
+  $text: String!
+  $synopsis: String!
+  $score: Int!
+  $imageUrl: String!
+  $rated: String!
+) {
+  createAnimePost(
+    input: {
+      title: $title
+      creatorId: $creatorId
+      text: $text
+      synopsis: $synopsis
+      score: $score
+      imageUrl: $imageUrl
+      rated: $rated
+    }
+  ) {
+    title
+    id
+    text
+    synopsis
+    score
+    imageUrl
+    id
+    rated
+  }
+}

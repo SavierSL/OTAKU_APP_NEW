@@ -16,7 +16,7 @@ class AnimePostInput {
   title!: string;
 
   //OWNER FIELD
-  @Field()
+  @Field(() => Int)
   creatorId!: number;
 
   @Field()

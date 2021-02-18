@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Text, Image, SimpleGrid } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import React, { useState, useEffect } from "react";
+import AnimeContent from "../components/createAnimeContent";
 import InputField from "../components/inputField";
 import Wrapper from "../components/wrapper";
 
@@ -107,13 +108,34 @@ const CreatePost: React.FC<CreatePostProps> = () => {
           </Form>
         )}
       </Formik>
-      {/* <InputField
-        textarea
-        name="text"
-        placeholder="Caption"
-        label="Caption"
-        type="text"
-      /> */}
+      {animePost ? (
+        <>
+          <Image
+            src={animePost.image_url}
+            height={200}
+            objectFit="cover"
+            position="relative"
+          />
+
+          <Box>
+            <Text fontWeight={500} fontSize={30}>
+              {animePost.title}
+            </Text>
+            <Text fontWeight={500} fontSize={20}>
+              {animePost.rated}
+            </Text>
+            <Text fontWeight={500} fontSize={20}>
+              {animePost.score}
+            </Text>
+            <Text fontWeight={500} fontSize={20}>
+              {animePost.synopsis}
+            </Text>
+          </Box>
+          <AnimeContent />
+        </>
+      ) : (
+        ""
+      )}
     </>
   );
 };
