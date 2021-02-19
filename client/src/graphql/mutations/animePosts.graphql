@@ -1,0 +1,22 @@
+query animePosts($limit: Int!, $cursor: String!) {
+  animePosts(limit: $limit, cursor: $cursor) {
+    hasMore
+    animes {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
+  }
+}

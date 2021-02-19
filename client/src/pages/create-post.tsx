@@ -1,21 +1,32 @@
-import { Box, Button, Flex, Text, Image, SimpleGrid } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  Image,
+  SimpleGrid,
+  Link,
+} from "@chakra-ui/react";
+import NextLink from "next/link";
 import { Form, Formik } from "formik";
 import React, { useState, useEffect } from "react";
 import AnimeContent from "../components/createAnimeContent";
 import InputField from "../components/inputField";
 import Wrapper from "../components/wrapper";
+import { withApollo } from "../utils/withApollo";
 
 export interface CreatePostProps {}
-interface Anime {
+export interface Anime {
   title: string;
   rated: string;
   synopsis: string;
-  score: number;
+  score: string;
   image_url: string;
 }
 
 const CreatePost: React.FC<CreatePostProps> = () => {
   const [animes, setAnimes] = useState([]);
+
   const [animePost, setAnimePost] = useState<Anime>(null);
   const getAnime = async (animeTitle: string) => {
     const res = await fetch(
@@ -38,6 +49,9 @@ const CreatePost: React.FC<CreatePostProps> = () => {
   return (
     <>
       Create Anime Post
+      <NextLink href="home">
+        <Link>HOME</Link>
+      </NextLink>
       <Formik
         initialValues={{ title: "", text: "" }}
         onSubmit={async (values) => {
@@ -55,7 +69,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
             />
             <SimpleGrid
               columns={{ sm: 4, md: 5, lg: 1 }}
-              spacing="40px"
+              spacing="10px"
               minChildWidth={{ sm: "500px", md: "250px", lg: "200px" }}
             >
               {animes.length !== 0
@@ -71,10 +85,11 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                             justifyContent="space-between"
                           >
                             <Text>{anime.title}</Text>
-                            <Box height={55} ml={3} pr={3}>
+                            <Box height="10rem" width="8rem" ml={3} pr={3}>
                               <Image
                                 src={anime.image_url}
-                                height={55}
+                                height="100%"
+                                width="100%"
                                 objectFit="cover"
                                 position="relative"
                               />
@@ -83,12 +98,13 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                           <Button
                             bg="azure"
                             onClick={() => {
-                              console.log(anime);
+                              const animeScore = anime.score + "";
+
                               setAnimePost({
                                 title: anime.title,
                                 image_url: anime.image_url,
                                 rated: anime.rated,
-                                score: anime.score,
+                                score: animeScore,
                                 synopsis: anime.synopsis,
                               });
                               setAnimes([]);
@@ -131,7 +147,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
               {animePost.synopsis}
             </Text>
           </Box>
-          <AnimeContent />
+          <AnimeContent animePost={animePost} />
         </>
       ) : (
         ""
@@ -140,4 +156,4 @@ const CreatePost: React.FC<CreatePostProps> = () => {
   );
 };
 
-export default CreatePost;
+export default withApollo({ ssr: false })(CreatePost);

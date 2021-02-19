@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, Float, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
@@ -22,10 +22,11 @@ export class AnimePost extends BaseEntity {
   title!: string;
 
   //OWNER FIELD
-  @Field()
+  @Field(() => Int)
   @Column()
   creatorId!: number;
 
+  @Field()
   @ManyToOne(() => User, (user) => user.animePost)
   creator: User;
 
@@ -41,13 +42,13 @@ export class AnimePost extends BaseEntity {
   @Column()
   synopsis!: string;
 
-  @Field(() => Int)
+  @Field()
   @Column()
-  score!: number;
+  score!: string;
 
   @Field()
   @Column()
-  imageUrl!: string;
+  image_url!: string;
 
   @Field(() => String)
   @CreateDateColumn()

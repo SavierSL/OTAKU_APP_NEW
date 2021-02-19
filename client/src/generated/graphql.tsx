@@ -16,6 +16,43 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
+  animePosts: PaginatedAnimePosts;
+};
+
+
+export type QueryAnimePostsArgs = {
+  cursor: Scalars['String'];
+  limit: Scalars['Int'];
+};
+
+export type PaginatedAnimePosts = {
+  __typename?: 'PaginatedAnimePosts';
+  hasMore: Scalars['Boolean'];
+  animes: Array<AnimePost>;
+};
+
+export type AnimePost = {
+  __typename?: 'AnimePost';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  creatorId: Scalars['Int'];
+  creator: User;
+  text: Scalars['String'];
+  rated: Scalars['String'];
+  synopsis: Scalars['String'];
+  score: Scalars['String'];
+  image_url: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Int'];
+  username: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type Mutation = {
@@ -47,28 +84,13 @@ export type MutationCreateProfileArgs = {
   input: ProfileInput;
 };
 
-export type AnimePost = {
-  __typename?: 'AnimePost';
-  id: Scalars['Int'];
-  title: Scalars['String'];
-  creatorId: Scalars['Float'];
-  text: Scalars['String'];
-  rated: Scalars['String'];
-  synopsis: Scalars['String'];
-  score: Scalars['Int'];
-  imageUrl: Scalars['String'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
-};
-
 export type AnimePostInput = {
   title: Scalars['String'];
-  creatorId: Scalars['Int'];
   text: Scalars['String'];
   synopsis: Scalars['String'];
   rated: Scalars['String'];
-  score: Scalars['Int'];
-  imageUrl: Scalars['String'];
+  score: Scalars['String'];
+  image_url: Scalars['String'];
 };
 
 export type ResponseField = {
@@ -81,15 +103,6 @@ export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
   message: Scalars['String'];
-};
-
-export type User = {
-  __typename?: 'User';
-  id: Scalars['Int'];
-  username: Scalars['String'];
-  email: Scalars['String'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
 };
 
 export type UserInput = {
@@ -113,13 +126,34 @@ export type ProfileInput = {
   mostFavouriteCharacter: Scalars['String'];
 };
 
+export type AnimePostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor: Scalars['String'];
+}>;
+
+
+export type AnimePostsQuery = (
+  { __typename?: 'Query' }
+  & { animePosts: (
+    { __typename?: 'PaginatedAnimePosts' }
+    & Pick<PaginatedAnimePosts, 'hasMore'>
+    & { animes: Array<(
+      { __typename?: 'AnimePost' }
+      & Pick<AnimePost, 'title' | 'creatorId' | 'rated' | 'text' | 'image_url' | 'id' | 'synopsis' | 'createdAt'>
+      & { creator: (
+        { __typename?: 'User' }
+        & Pick<User, 'username' | 'id' | 'email' | 'createdAt'>
+      ) }
+    )> }
+  ) }
+);
+
 export type CreateAnimePostMutationVariables = Exact<{
   title: Scalars['String'];
-  creatorId: Scalars['Int'];
   text: Scalars['String'];
   synopsis: Scalars['String'];
-  score: Scalars['Int'];
-  imageUrl: Scalars['String'];
+  score: Scalars['String'];
+  image_url: Scalars['String'];
   rated: Scalars['String'];
 }>;
 
@@ -128,24 +162,75 @@ export type CreateAnimePostMutation = (
   { __typename?: 'Mutation' }
   & { createAnimePost: (
     { __typename?: 'AnimePost' }
-    & Pick<AnimePost, 'title' | 'id' | 'text' | 'synopsis' | 'score' | 'imageUrl' | 'rated'>
+    & Pick<AnimePost, 'title' | 'id' | 'text' | 'synopsis' | 'score' | 'image_url' | 'rated' | 'creatorId'>
   ) }
 );
 
 
+export const AnimePostsDocument = gql`
+    query animePosts($limit: Int!, $cursor: String!) {
+  animePosts(limit: $limit, cursor: $cursor) {
+    hasMore
+    animes {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useAnimePostsQuery__
+ *
+ * To run a query within a React component, call `useAnimePostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAnimePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAnimePostsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useAnimePostsQuery(baseOptions: Apollo.QueryHookOptions<AnimePostsQuery, AnimePostsQueryVariables>) {
+        return Apollo.useQuery<AnimePostsQuery, AnimePostsQueryVariables>(AnimePostsDocument, baseOptions);
+      }
+export function useAnimePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AnimePostsQuery, AnimePostsQueryVariables>) {
+          return Apollo.useLazyQuery<AnimePostsQuery, AnimePostsQueryVariables>(AnimePostsDocument, baseOptions);
+        }
+export type AnimePostsQueryHookResult = ReturnType<typeof useAnimePostsQuery>;
+export type AnimePostsLazyQueryHookResult = ReturnType<typeof useAnimePostsLazyQuery>;
+export type AnimePostsQueryResult = Apollo.QueryResult<AnimePostsQuery, AnimePostsQueryVariables>;
 export const CreateAnimePostDocument = gql`
-    mutation createAnimePost($title: String!, $creatorId: Int!, $text: String!, $synopsis: String!, $score: Int!, $imageUrl: String!, $rated: String!) {
+    mutation createAnimePost($title: String!, $text: String!, $synopsis: String!, $score: String!, $image_url: String!, $rated: String!) {
   createAnimePost(
-    input: {title: $title, creatorId: $creatorId, text: $text, synopsis: $synopsis, score: $score, imageUrl: $imageUrl, rated: $rated}
+    input: {title: $title, text: $text, synopsis: $synopsis, score: $score, image_url: $image_url, rated: $rated}
   ) {
     title
     id
     text
     synopsis
     score
-    imageUrl
-    id
+    image_url
     rated
+    creatorId
   }
 }
     `;
@@ -165,11 +250,10 @@ export type CreateAnimePostMutationFn = Apollo.MutationFunction<CreateAnimePostM
  * const [createAnimePostMutation, { data, loading, error }] = useCreateAnimePostMutation({
  *   variables: {
  *      title: // value for 'title'
- *      creatorId: // value for 'creatorId'
  *      text: // value for 'text'
  *      synopsis: // value for 'synopsis'
  *      score: // value for 'score'
- *      imageUrl: // value for 'imageUrl'
+ *      image_url: // value for 'image_url'
  *      rated: // value for 'rated'
  *   },
  * });

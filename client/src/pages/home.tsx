@@ -1,115 +1,97 @@
-import {
-  FormControl,
-  FormLabel,
-  Input,
-  Flex,
-  Text,
-  FormHelperText,
-  Button,
-  Image,
-  Box,
-} from "@chakra-ui/react";
-import { Formik, Form } from "formik";
-import { animate } from "framer-motion";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import Wrapper from "../components/wrapper";
+import { Flex, Image, Text, Link, Box, Button } from "@chakra-ui/react";
+import NextLink from "next/link";
+import React, { useState } from "react";
+import { useAnimePostsQuery } from "../generated/graphql";
+import { withApollo } from "../utils/withApollo";
 
-export interface HomeProps {}
+export interface IndexProps {}
 
-const Home: React.FC<HomeProps> = () => {
-  const [animes, setAnimes] = useState([]);
-  const getAnime = async (animeTitle: string) => {
-    const res = await fetch(
-      `https://jikan1.p.rapidapi.com/search/anime?q=${animeTitle}`,
-      {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key":
-            "0a1e2916a5msh44da6893e3cecdbp108d8bjsne9ac3d4c9fd4",
-          "x-rapidapi-host": "jikan1.p.rapidapi.com",
-        },
-      }
+const Home: React.FC<IndexProps> = () => {
+  const [hasMore, setHasMore] = useState("");
+  const { data, loading, fetchMore, variables } = useAnimePostsQuery({
+    variables: {
+      limit: 2,
+      cursor: "",
+    },
+  });
+  console.log(data?.animePosts.animes);
+  if (!loading && !data) {
+    return (
+      <div>
+        <NextLink href="create-post">
+          <Link>Create Post</Link>
+        </NextLink>
+      </div>
     );
-    const animes = await res.json();
-    return animes.results;
-  };
-  useEffect(() => {
-    console.log(animes);
-  }, [animes]);
-
+  }
   return (
     <>
-      <Wrapper variant="small">
-        <Formik
-          initialValues={{ title: "" }}
-          onSubmit={async (values) => {
-            const data = await getAnime(values.title);
-            setAnimes(data.slice(0, 8));
-            console.log(animes);
-            return data;
-          }}
-        >
-          {({ values, isSubmitting, handleChange }) => (
-            <Form>
-              <Flex
-                justifyContent="space-between"
-                alignItems="center"
-                mt={4}
-                p={2}
-              >
-                <FormControl id="title">
-                  <FormLabel htmlFor="title">Search</FormLabel>
-                  <Input
-                    type="text"
-                    name="title"
-                    placeholder="Anime title"
-                    value={values.title}
-                    onChange={handleChange}
-                  />
-                  <FormHelperText>IKUZO</FormHelperText>
-                </FormControl>
-                <Button type="submit" isLoading={isSubmitting} ml={4}>
-                  Search
-                </Button>
-              </Flex>
-            </Form>
-          )}
-        </Formik>
-      </Wrapper>
-      {animes.length !== 0
-        ? animes.map((anime) => {
-            return (
-              <>
-                <Box mt={2}>
-                  <Wrapper variant="regular">
-                    <Flex
-                      bg="aliceblue"
-                      borderRadius={10}
-                      alignItems="center"
-                      p={4}
-                      justifyContent="space-between"
+      <NextLink href="create-post">
+        <Link>Create Post haha</Link>
+      </NextLink>
+      <Box m="auto">
+        <Box position="absolute" right="5rem" w="70%" p={4}>
+          {!data && loading ? (
+            <div></div>
+          ) : (
+            data!.animePosts.animes.map((anime) => {
+              return !anime ? null : (
+                <Box bg="#f6f5f5" m="1rem" borderRadius="1rem" shadow="base">
+                  <Flex
+                    mt={2}
+                    flexDirection={{ sm: "column", md: "row" }}
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Box
+                      height="20rem"
+                      width="18rem"
+                      p="1rem"
+                      borderRadius="1rem"
                     >
+                      <Image
+                        src={anime.image_url}
+                        width="100%"
+                        height="100%"
+                        objectFit="cover"
+                        position="relative"
+                      />
+                    </Box>
+                    <Box p="2rem" position="relative" height="100%" width="90%">
+                      <Text bg="#d3e0ea" height="100%">
+                        {anime.text}
+                      </Text>
+                      <Text>Posted by {anime.creator.username}</Text>
                       <Text>{anime.title}</Text>
-                      <Box width={60} ml={3} pr={3}>
-                        <Image
-                          src={anime.image_url}
-                          width="100%"
-                          objectFit="cover"
-                          position="relative"
-                        />
-                      </Box>
-                    </Flex>
-                    <Button bg="azure">ADD TO MY FAV</Button>
-                    <Button bg="bisque">VISIT</Button>
-                  </Wrapper>
+                      <Text>{anime.synopsis}</Text>
+                    </Box>
+                  </Flex>
                 </Box>
-              </>
-            );
-          })
-        : ""}
+              );
+            })
+          )}
+        </Box>
+        {data?.animePosts.hasMore && data ? (
+          <Button
+            onClick={() =>
+              fetchMore({
+                variables: {
+                  limit: variables?.limit,
+                  cursor:
+                    data.animePosts.animes[data.animePosts.animes.length - 1]
+                      .createdAt,
+                },
+              })
+            }
+          >
+            Load More
+          </Button>
+        ) : (
+          ""
+        )}
+      </Box>
     </>
   );
 };
 
-export default Home;
+export default withApollo({ ssr: true })(Home);

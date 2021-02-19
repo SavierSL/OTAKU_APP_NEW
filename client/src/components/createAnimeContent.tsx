@@ -1,12 +1,34 @@
+import { MutationFunctionOptions } from "@apollo/client";
 import { Box, Button, Flex, Text, Image, SimpleGrid } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import React from "react";
+import {
+  CreateAnimePostMutation,
+  Exact,
+  useCreateAnimePostMutation,
+} from "../generated/graphql";
+import { Anime } from "../pages/create-post";
+import { withApollo } from "../utils/withApollo";
 import InputField from "./inputField";
-export interface AnimeContentProps {}
+export interface AnimeContentProps {
+  animePost: Anime;
+}
 
-const AnimeContent: React.FC<AnimeContentProps> = () => {
+const AnimeContent: React.FC<AnimeContentProps> = ({ animePost }) => {
+  const [createAnimePost] = useCreateAnimePostMutation();
   return (
-    <Formik initialValues={{ title: "" }} onSubmit={async (values) => {}}>
+    <Formik
+      initialValues={{ text: "" }}
+      onSubmit={async ({ text }) => {
+        createAnimePost({
+          variables: { text, ...animePost },
+          update: (cache) => {
+            console.log(cache);
+            cache.evict({ fieldName: "animePosts" });
+          },
+        });
+      }}
+    >
       {({ isSubmitting }) => (
         <Form>
           <InputField
@@ -25,4 +47,4 @@ const AnimeContent: React.FC<AnimeContentProps> = () => {
   );
 };
 
-export default AnimeContent;
+export default withApollo({ ssr: false })(AnimeContent);

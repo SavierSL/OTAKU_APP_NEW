@@ -38,7 +38,7 @@ const main = async () => {
   });
   // await AnimePost.delete({});
   // await User.delete({});
-  //run
+  // //runnnn
   const app = express();
 
   //2 cookie Redis

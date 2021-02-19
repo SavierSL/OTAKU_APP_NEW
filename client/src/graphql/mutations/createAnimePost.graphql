@@ -1,20 +1,18 @@
 mutation createAnimePost(
   $title: String!
-  $creatorId: Int!
   $text: String!
   $synopsis: String!
-  $score: Int!
-  $imageUrl: String!
+  $score: String!
+  $image_url: String!
   $rated: String!
 ) {
   createAnimePost(
     input: {
       title: $title
-      creatorId: $creatorId
       text: $text
       synopsis: $synopsis
       score: $score
-      imageUrl: $imageUrl
+      image_url: $image_url
       rated: $rated
     }
   ) {
@@ -23,8 +21,8 @@ mutation createAnimePost(
     text
     synopsis
     score
-    imageUrl
-    id
+    image_url
     rated
+    creatorId
   }
 }
