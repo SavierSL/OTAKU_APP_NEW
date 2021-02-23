@@ -1,0 +1,8 @@
+mutation updateComment($id: Int!, $comment: String!) {
+  updateComment(id: $id, comment: $comment) {
+    comment
+    id
+    commentorId
+    animePostId
+  }
+}

@@ -3,6 +3,7 @@ import {
   useCommentPostMutation,
   useDeleteCommentMutation,
   useGetAnimePostCommentMutation,
+  useUpdateCommentMutation,
 } from "../generated/graphql";
 import { Flex, Image, Text, Link, Box, Button } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -23,7 +24,9 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
     deleteComment,
     { loading: deleteLoading },
   ] = useDeleteCommentMutation();
+  const [updateComment] = useUpdateCommentMutation();
   const [openComment, setOpentComment] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [animeComments, setAnimeComments] = useState([]);
   const [commented, setCommented] = useState(false);
   const getComments = async (animePostId: number) => {
@@ -44,20 +47,59 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
           {animeComments.map((comment: Comment) => {
             return (
               <>
-                <Text>{comment.comment}</Text>
-                <Text>{comment.commentor.username}</Text>
-                {MeData.me.id === comment.commentor.id ? (
-                  <Button
-                    onClick={async () => {
-                      await deleteComment({ variables: { id: comment.id } });
-                      setCommented(!commented);
-                    }}
-                  >
-                    Delete
-                  </Button>
-                ) : (
-                  ""
-                )}
+                <Box mt="2rem">
+                  <Text>{comment.comment}</Text>
+                  <Text>{comment.commentor.username}</Text>
+                  {MeData.me.id === comment.commentor.id ? (
+                    <>
+                      <Button onClick={() => setOpenEdit(!openEdit)}>
+                        Edit
+                      </Button>
+                      {openEdit ? (
+                        <Formik
+                          initialValues={{ newComment: "" }}
+                          onSubmit={({ newComment }, { resetForm }) => {
+                            updateComment({
+                              variables: {
+                                comment: newComment,
+                                id: comment.id,
+                              },
+                            });
+                            setCommented(!commented);
+                            resetForm({ values: { newComment: "" } });
+                          }}
+                        >
+                          {({ isSubmitting }) => (
+                            <Form>
+                              <InputField
+                                name="newComment"
+                                type="text"
+                                placeholder="edit comment"
+                              />
+                              <Button type="submit" isLoading={isSubmitting}>
+                                Edit
+                              </Button>
+                            </Form>
+                          )}
+                        </Formik>
+                      ) : (
+                        ""
+                      )}
+                      <Button
+                        onClick={async () => {
+                          await deleteComment({
+                            variables: { id: comment.id },
+                          });
+                          setCommented(!commented);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </Box>
               </>
             );
           })}

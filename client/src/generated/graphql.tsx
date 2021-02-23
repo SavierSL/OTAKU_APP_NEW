@@ -82,6 +82,7 @@ export type Mutation = {
   commentPost: Comment;
   getAnimePostComment: Array<Comment>;
   deleteComment: Scalars['Boolean'];
+  updateComment: Comment;
   register: ResponseField;
   login: ResponseField;
   logout: Scalars['Boolean'];
@@ -118,6 +119,12 @@ export type MutationGetAnimePostCommentArgs = {
 
 
 export type MutationDeleteCommentArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationUpdateCommentArgs = {
+  comment: Scalars['String'];
   id: Scalars['Int'];
 };
 
@@ -344,6 +351,20 @@ export type RegisterMutation = (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'email'>
     )> }
+  ) }
+);
+
+export type UpdateCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  comment: Scalars['String'];
+}>;
+
+
+export type UpdateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { updateComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'comment' | 'id' | 'commentorId' | 'animePostId'>
   ) }
 );
 
@@ -784,6 +805,42 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdateCommentDocument = gql`
+    mutation updateComment($id: Int!, $comment: String!) {
+  updateComment(id: $id, comment: $comment) {
+    comment
+    id
+    commentorId
+    animePostId
+  }
+}
+    `;
+export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
+
+/**
+ * __useUpdateCommentMutation__
+ *
+ * To run a mutation, you first call `useUpdateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCommentMutation, { data, loading, error }] = useUpdateCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      comment: // value for 'comment'
+ *   },
+ * });
+ */
+export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
+        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, baseOptions);
+      }
+export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
+export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
+export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
 export const UpdatePostDocument = gql`
     mutation updatePost($id: Int!, $title: String!, $text: String!) {
   updatePost(id: $id, title: $title, text: $text) {
