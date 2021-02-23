@@ -161,7 +161,7 @@ export class AnimePostResolver {
   }
   @Mutation(() => Comment)
   async commentPost(
-    @Arg("animePostId") animePostId: number,
+    @Arg("animePostId", () => Int) animePostId: number,
     @Arg("comment") comment: string,
     @Ctx() { req }: MyContext
   ): Promise<Comment> {
@@ -175,10 +175,55 @@ export class AnimePostResolver {
   async getAnimePostComment(
     @Arg("animePostId", () => Int) animePostId: number
   ): Promise<Comment[]> {
+    // const comments = await getConnection().query(`
+    // select c.*
+    // json_build_object(
+    //   'id',u.id,
+    //   'username',u.username
+    // ) as commentor
+
+    // from comments c
+
+    // inner join public.anime_post p on p.id = c."animePostId"
+    // inner join public.user u on u.id = p."creatorId"
+
+    // order by c."createdAt" DESC
+    // `);
     const comments = await Comment.find({
       where: { animePostId: animePostId },
       relations: ["commentor"],
+      order: { createdAt: "ASC" },
     });
     return comments;
+  }
+  @Mutation(() => Boolean)
+  async deleteComment(@Arg("id", () => Int) id: number) {
+    const deleteComment = await Comment.delete({
+      id,
+    });
+    if (deleteComment) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Mutation(() => Comment)
+  async updateComment(
+    @Arg("id", () => Int) id: number,
+    @Arg("comment") comment: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Comment> {
+    const result = await getConnection()
+      .createQueryBuilder()
+      .update(Comment)
+      .set({ comment, id })
+      .where('id = :id and "commentorId" = :commentorId', {
+        id: id,
+        commentorId: req.session.userId,
+      })
+      .returning("*")
+      .execute();
+    return result.raw[0];
   }
 }

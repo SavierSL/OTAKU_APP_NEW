@@ -43,7 +43,7 @@ export type AnimePost = {
   synopsis: Scalars['String'];
   score: Scalars['String'];
   image_url: Scalars['String'];
-  comments: Comment;
+  comments: Array<Comment>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -81,6 +81,7 @@ export type Mutation = {
   updatePost: AnimePost;
   commentPost: Comment;
   getAnimePostComment: Array<Comment>;
+  deleteComment: Scalars['Boolean'];
   register: ResponseField;
   login: ResponseField;
   logout: Scalars['Boolean'];
@@ -107,12 +108,17 @@ export type MutationUpdatePostArgs = {
 
 export type MutationCommentPostArgs = {
   comment: Scalars['String'];
-  animePostId: Scalars['Float'];
+  animePostId: Scalars['Int'];
 };
 
 
 export type MutationGetAnimePostCommentArgs = {
   animePostId: Scalars['Int'];
+};
+
+
+export type MutationDeleteCommentArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -212,6 +218,20 @@ export type AnimePostsQuery = (
   ) }
 );
 
+export type CommentPostMutationVariables = Exact<{
+  animePostId: Scalars['Int'];
+  comment: Scalars['String'];
+}>;
+
+
+export type CommentPostMutation = (
+  { __typename?: 'Mutation' }
+  & { commentPost: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'comment' | 'commentorId' | 'animePostId'>
+  ) }
+);
+
 export type CreateAnimePostMutationVariables = Exact<{
   title: Scalars['String'];
   text: Scalars['String'];
@@ -228,6 +248,16 @@ export type CreateAnimePostMutation = (
     { __typename?: 'AnimePost' }
     & Pick<AnimePost, 'title' | 'id' | 'text' | 'synopsis' | 'score' | 'image_url' | 'rated' | 'creatorId'>
   ) }
+);
+
+export type DeleteCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteComment'>
 );
 
 export type DeletePostMutationVariables = Exact<{
@@ -429,6 +459,42 @@ export function useAnimePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type AnimePostsQueryHookResult = ReturnType<typeof useAnimePostsQuery>;
 export type AnimePostsLazyQueryHookResult = ReturnType<typeof useAnimePostsLazyQuery>;
 export type AnimePostsQueryResult = Apollo.QueryResult<AnimePostsQuery, AnimePostsQueryVariables>;
+export const CommentPostDocument = gql`
+    mutation commentPost($animePostId: Int!, $comment: String!) {
+  commentPost(animePostId: $animePostId, comment: $comment) {
+    id
+    comment
+    commentorId
+    animePostId
+  }
+}
+    `;
+export type CommentPostMutationFn = Apollo.MutationFunction<CommentPostMutation, CommentPostMutationVariables>;
+
+/**
+ * __useCommentPostMutation__
+ *
+ * To run a mutation, you first call `useCommentPostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCommentPostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [commentPostMutation, { data, loading, error }] = useCommentPostMutation({
+ *   variables: {
+ *      animePostId: // value for 'animePostId'
+ *      comment: // value for 'comment'
+ *   },
+ * });
+ */
+export function useCommentPostMutation(baseOptions?: Apollo.MutationHookOptions<CommentPostMutation, CommentPostMutationVariables>) {
+        return Apollo.useMutation<CommentPostMutation, CommentPostMutationVariables>(CommentPostDocument, baseOptions);
+      }
+export type CommentPostMutationHookResult = ReturnType<typeof useCommentPostMutation>;
+export type CommentPostMutationResult = Apollo.MutationResult<CommentPostMutation>;
+export type CommentPostMutationOptions = Apollo.BaseMutationOptions<CommentPostMutation, CommentPostMutationVariables>;
 export const CreateAnimePostDocument = gql`
     mutation createAnimePost($title: String!, $text: String!, $synopsis: String!, $score: String!, $image_url: String!, $rated: String!) {
   createAnimePost(
@@ -475,6 +541,36 @@ export function useCreateAnimePostMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateAnimePostMutationHookResult = ReturnType<typeof useCreateAnimePostMutation>;
 export type CreateAnimePostMutationResult = Apollo.MutationResult<CreateAnimePostMutation>;
 export type CreateAnimePostMutationOptions = Apollo.BaseMutationOptions<CreateAnimePostMutation, CreateAnimePostMutationVariables>;
+export const DeleteCommentDocument = gql`
+    mutation deleteComment($id: Int!) {
+  deleteComment(id: $id)
+}
+    `;
+export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
+
+/**
+ * __useDeleteCommentMutation__
+ *
+ * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
+        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, baseOptions);
+      }
+export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
+export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
+export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
 export const DeletePostDocument = gql`
     mutation deletePost($id: Int!) {
   deletePost(id: $id)

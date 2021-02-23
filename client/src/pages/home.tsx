@@ -12,6 +12,7 @@ import NavBar from "../components/navBar";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Comments from "../components/comments";
+import EditAndDeletePost from "../components/EditAndDeletePost";
 
 export interface IndexProps {}
 
@@ -89,45 +90,9 @@ const Home: React.FC<IndexProps> = () => {
                           <Text>Posted by {anime.creator.username}</Text>
                           <Text>{anime.title}</Text>
                           <Text>{anime.synopsis}</Text>
+
+                          <EditAndDeletePost anime={anime} />
                           <Comments animePostId={anime.id} />
-                          {MeData?.me?.id === anime.creatorId ? (
-                            <>
-                              <NextLink
-                                href="/post/edit/[id]"
-                                as={`/post/edit/${anime.id}`}
-                              >
-                                <Button as={Link} color="green">
-                                  Edit
-                                </Button>
-                              </NextLink>
-                              <Button
-                                isLoading={deleteLoading}
-                                onClick={async () => {
-                                  await deletePost({
-                                    variables: { id: anime.id },
-                                    update: (cache) => {
-                                      cache.evict({
-                                        id: "AnimePost:" + anime.id,
-                                      });
-                                    },
-                                  });
-                                  await fetchMore({
-                                    variables: {
-                                      limit: 1,
-                                      cursor:
-                                        data.animePosts.animes[
-                                          data.animePosts.animes.length - 1
-                                        ].createdAt,
-                                    },
-                                  });
-                                }}
-                              >
-                                Delete
-                              </Button>
-                            </>
-                          ) : (
-                            ""
-                          )}
                         </Box>
                       </Flex>
                     </Box>
