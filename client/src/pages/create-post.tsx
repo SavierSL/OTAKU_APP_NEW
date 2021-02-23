@@ -14,7 +14,13 @@ import AnimeContent from "../components/createAnimeContent";
 import InputField from "../components/inputField";
 import Wrapper from "../components/wrapper";
 import { withApollo } from "../utils/withApollo";
+import { useRouter } from "next/router";
 import { useIsAuth } from "../utils/isAuth";
+import {
+  useAnimePostsQuery,
+  useDeletePostMutation,
+  useMeQuery,
+} from "../generated/graphql";
 
 export interface CreatePostProps {}
 export interface Anime {
@@ -26,8 +32,9 @@ export interface Anime {
 }
 
 const CreatePost: React.FC<CreatePostProps> = () => {
+  const router = useRouter();
+  const { data: MeData, loading: MeLoading } = useMeQuery();
   const [animes, setAnimes] = useState([]);
-  useIsAuth();
   const [animePost, setAnimePost] = useState<Anime>(null);
   const getAnime = async (animeTitle: string) => {
     const res = await fetch(
@@ -44,9 +51,14 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     const animes = await res.json();
     return animes.results;
   };
-  useEffect(() => {
-    console.log(animePost);
-  }, [animePost]);
+
+  if (!MeData?.me && !MeLoading) {
+    // if it failed this next query will be added and the router.pathname, it is depend on the url 'dynamic'
+    // we are telling if where ti should go after it logged in
+    // this will become /login?next=/create-post. if logged in will go to create-post
+    router.push("/");
+  }
+
   return (
     <>
       Create Anime Post

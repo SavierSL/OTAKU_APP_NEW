@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User";
+import { Comment } from "./Comment";
 
 @ObjectType()
 @Entity()
@@ -49,6 +51,10 @@ export class AnimePost extends BaseEntity {
   @Field()
   @Column()
   image_url!: string;
+
+  @Field(() => [Comment])
+  @OneToMany(() => Comment, (comment) => comment.animePost)
+  comments: Comment[];
 
   @Field(() => String)
   @CreateDateColumn()

@@ -1,0 +1,10 @@
+mutation getAnimePostComment($animePostId: Int!) {
+  getAnimePostComment(animePostId: $animePostId) {
+    id
+    comment
+    commentor {
+      id
+      username
+    }
+  }
+}

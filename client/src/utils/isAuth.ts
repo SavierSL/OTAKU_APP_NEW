@@ -15,7 +15,9 @@ export const useIsAuth = () => {
       // if it failed this next query will be added and the router.pathname, it is depend on the url 'dynamic'
       // we are telling if where ti should go after it logged in
       // this will become /login?next=/create-post. if logged in will go to create-post
-      router.push("/?next=" + router.pathname);
+      router.push("/");
+    } else {
+      router.push("/home");
     }
-  }, [data, loading, router]);
+  }, [data, loading]);
 };

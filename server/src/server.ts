@@ -17,6 +17,7 @@ import { User } from "./Entities/User";
 import { UserResolver } from "./resolvers/user";
 import { PorfileResolver } from "./resolvers/profile";
 import { Profile } from "./Entities/Profile";
+import { Comment } from "./Entities/Comment";
 
 //declare this for the session
 declare module "express-session" {
@@ -34,11 +35,11 @@ const main = async () => {
     password: "xxkaa548",
     logging: true,
     synchronize: true,
-    entities: [AnimePost, User, Profile],
+    entities: [AnimePost, User, Profile, Comment],
   });
   // await AnimePost.delete({});
   // await User.delete({});
-  // //runnnn
+  // //runnnnn ittt
   const app = express();
 
   //2 cookie Redis

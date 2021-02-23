@@ -128,4 +128,19 @@ export class UserResolver {
     req.session.userId = user.id;
     return { user };
   }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    //if there is an error in req.session.destroy() it will return false
+    return new Promise((resolve) => {
+      req.session.destroy((err) => {
+        res.clearCookie("cid");
+        if (err) {
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      });
+    });
+  }
 }

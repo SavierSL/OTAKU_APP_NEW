@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import {
 } from "typeorm";
 import { AnimePost } from "./AnimePost";
 import { Profile } from "./Profile";
+import { Comment } from "./Comment";
 
 @ObjectType()
 @Entity()
@@ -35,6 +37,9 @@ export class User extends BaseEntity {
   @OneToOne(() => Profile, (profile) => profile.user)
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Comment, (comment) => comment.commentor)
+  comments: Comment[];
 
   //POSTS
   @OneToMany(() => AnimePost, (animePost) => animePost.creator)

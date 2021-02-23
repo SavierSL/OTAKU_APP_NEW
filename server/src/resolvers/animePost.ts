@@ -15,6 +15,7 @@ import {
 import { getConnection } from "typeorm";
 import { AnimePost } from "../Entities/AnimePost";
 import { isAuth } from "../middleware/isAuth";
+import { Comment } from "../Entities/Comment";
 
 @InputType()
 class AnimePostInput {
@@ -77,16 +78,22 @@ export class AnimePostResolver {
     const posts = await getConnection().query(
       `
     select p.*,
+    
         json_build_object(
       'id', u.id,
       'username', u.username,
      ${req.session.userId ? ` 'email', u.email,` : ""}
       'createdAt', u."createdAt"
-      ) creator
+      ) as creator
 
+      
     from anime_post p
- 
+
+
+    
     inner join public.user u on u.id = p."creatorId"
+
+   
 
     ${cursor ? `where p."createdAt" < $2` : ""} 
 
@@ -151,5 +158,27 @@ export class AnimePostResolver {
       .returning("*")
       .execute();
     return result.raw[0];
+  }
+  @Mutation(() => Comment)
+  async commentPost(
+    @Arg("animePostId") animePostId: number,
+    @Arg("comment") comment: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Comment> {
+    return Comment.create({
+      animePostId: animePostId,
+      comment: comment,
+      commentorId: req.session.userId,
+    }).save();
+  }
+  @Mutation(() => [Comment])
+  async getAnimePostComment(
+    @Arg("animePostId", () => Int) animePostId: number
+  ): Promise<Comment[]> {
+    const comments = await Comment.find({
+      where: { animePostId: animePostId },
+      relations: ["commentor"],
+    });
+    return comments;
   }
 }
