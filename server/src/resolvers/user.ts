@@ -6,6 +6,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import { getConnection } from "typeorm";
@@ -45,6 +46,15 @@ class ResponseField {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req }: MyContext): Promise<User | null> {
+    const user = await User.findOne({ id: req.session.userId });
+    if (!user) {
+      return null;
+    }
+    return user; //
+  }
+
   @Mutation(() => ResponseField)
   async register(
     @Arg("options") options: UserInput,

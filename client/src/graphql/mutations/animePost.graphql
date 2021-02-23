@@ -1,0 +1,17 @@
+query animePost($id: Int!) {
+  animePost(id: $id) {
+    title
+    creatorId
+    rated
+    text
+    image_url
+    id
+    creatorId
+    synopsis
+    createdAt
+    creator {
+      id
+      username
+    }
+  }
+}

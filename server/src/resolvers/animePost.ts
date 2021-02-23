@@ -1,9 +1,10 @@
+import { User } from "src/Entities/User";
 import { MyContext } from "src/types";
 import {
   Arg,
   Ctx,
   Field,
-  Float,
+  UseMiddleware,
   InputType,
   Int,
   Mutation,
@@ -13,6 +14,7 @@ import {
 } from "type-graphql";
 import { getConnection } from "typeorm";
 import { AnimePost } from "../Entities/AnimePost";
+import { isAuth } from "../middleware/isAuth";
 
 @InputType()
 class AnimePostInput {
@@ -49,6 +51,15 @@ export class PaginatedAnimePosts {
 //GraphQL
 @Resolver()
 export class AnimePostResolver {
+  @Query(() => AnimePost)
+  async animePost(
+    @Arg("id", () => Int) id: number
+  ): Promise<AnimePost | undefined> {
+    const findAnimePost = await AnimePost.findOne(id, {
+      relations: ["creator"],
+    });
+    return findAnimePost;
+  }
   @Query(() => PaginatedAnimePosts)
   async animePosts(
     @Arg("limit", () => Int) limit: number,
@@ -100,5 +111,45 @@ export class AnimePostResolver {
       ...input,
       creatorId: req.session.userId,
     }).save();
+  }
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deletePost(
+    @Arg("id", () => Int) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Boolean> {
+    try {
+      const postDeleted = await AnimePost.delete({
+        creatorId: req.session.userId,
+        id: id,
+      });
+      if (postDeleted) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+  @Mutation(() => AnimePost)
+  @UseMiddleware(isAuth)
+  async updatePost(
+    @Arg("id", () => Int) id: string,
+    @Arg("title") title: string,
+    @Arg("text") text: string,
+    @Ctx() { req }: MyContext
+  ): Promise<AnimePost> {
+    const result = await getConnection()
+      .createQueryBuilder()
+      .update(AnimePost)
+      .set({ title, text })
+      .where('id = :id and "creatorId" = :creatorId', {
+        id: id,
+        creatorId: req.session.userId,
+      })
+      .returning("*")
+      .execute();
+    return result.raw[0];
   }
 }

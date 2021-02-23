@@ -1,12 +1,19 @@
 import { Flex, Image, Text, Link, Box, Button } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
-import { useAnimePostsQuery } from "../generated/graphql";
+import {
+  useAnimePostsQuery,
+  useDeletePostMutation,
+  useMeQuery,
+} from "../generated/graphql";
+import { useIsAuth } from "../utils/isAuth";
 import { withApollo } from "../utils/withApollo";
 
 export interface IndexProps {}
 
 const Home: React.FC<IndexProps> = () => {
+  const { data: MeData, loading: MeLoading } = useMeQuery();
+  const [deletePost, { loading: deleteLoading }] = useDeletePostMutation();
   const [hasMore, setHasMore] = useState("");
   const { data, loading, fetchMore, variables } = useAnimePostsQuery({
     variables: {
@@ -14,7 +21,7 @@ const Home: React.FC<IndexProps> = () => {
       cursor: "",
     },
   });
-  console.log(data?.animePosts.animes);
+  useIsAuth();
   if (!loading && !data) {
     return (
       <div>
@@ -64,6 +71,44 @@ const Home: React.FC<IndexProps> = () => {
                       <Text>Posted by {anime.creator.username}</Text>
                       <Text>{anime.title}</Text>
                       <Text>{anime.synopsis}</Text>
+                      {MeData.me.id === anime.creatorId ? (
+                        <>
+                          <NextLink
+                            href="/post/edit/[id]"
+                            as={`/post/edit/${anime.id}`}
+                          >
+                            <Button as={Link} color="green">
+                              Edit
+                            </Button>
+                          </NextLink>
+                          <Button
+                            isLoading={deleteLoading}
+                            onClick={async () => {
+                              await deletePost({
+                                variables: { id: anime.id },
+                                update: (cache) => {
+                                  cache.evict({
+                                    id: "AnimePost:" + anime.id,
+                                  });
+                                },
+                              });
+                              await fetchMore({
+                                variables: {
+                                  limit: 1,
+                                  cursor:
+                                    data.animePosts.animes[
+                                      data.animePosts.animes.length - 1
+                                    ].createdAt,
+                                },
+                              });
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </Box>
                   </Flex>
                 </Box>

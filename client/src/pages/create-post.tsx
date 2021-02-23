@@ -14,6 +14,7 @@ import AnimeContent from "../components/createAnimeContent";
 import InputField from "../components/inputField";
 import Wrapper from "../components/wrapper";
 import { withApollo } from "../utils/withApollo";
+import { useIsAuth } from "../utils/isAuth";
 
 export interface CreatePostProps {}
 export interface Anime {
@@ -26,7 +27,7 @@ export interface Anime {
 
 const CreatePost: React.FC<CreatePostProps> = () => {
   const [animes, setAnimes] = useState([]);
-
+  useIsAuth();
   const [animePost, setAnimePost] = useState<Anime>(null);
   const getAnime = async (animeTitle: string) => {
     const res = await fetch(
