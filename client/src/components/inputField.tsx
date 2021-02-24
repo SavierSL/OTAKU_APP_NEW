@@ -38,9 +38,9 @@ const InputField: React.FC<InputFieldProps> = ({
         id={field.name}
         color="white"
         border="2px"
-        borderColor="#0f1123"
+        borderColor="black"
         bg="#0f1123"
-        mb="1rem"
+        p="1.5rem"
       />
       {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
     </FormControl>

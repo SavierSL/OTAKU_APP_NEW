@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import InputField from "../components/inputField";
 import NavBar from "../components/navBar";
+import Wrapper from "../components/wrapper";
 import {
   MeDocument,
   MeQuery,
@@ -31,55 +32,89 @@ const Index: React.FC<IndexProps> = () => {
 
   return (
     <>
-      <NavBar />
-      <Text color="white">Taku.</Text>
-      <Formik
-        initialValues={{ usernameOrEmail: "", password: "" }}
-        onSubmit={async (values, { setErrors }) => {
-          const res = await login({
-            variables: { ...values },
-            update: (cache, { data }) => {
-              cache.writeQuery<MeQuery>({
-                query: MeDocument,
-                data: {
-                  __typename: "Query",
-                  me: data.login.user,
+      <Box height="100vh">
+        <Wrapper variant="regular">
+          <Formik
+            initialValues={{ usernameOrEmail: "", password: "" }}
+            onSubmit={async (values, { setErrors }) => {
+              const res = await login({
+                variables: { ...values },
+                update: (cache, { data }) => {
+                  cache.writeQuery<MeQuery>({
+                    query: MeDocument,
+                    data: {
+                      __typename: "Query",
+                      me: data.login.user,
+                    },
+                  });
                 },
               });
-            },
-          });
-          if (res.data?.login.errors) {
-            //this can be undefined
-            //if there is error
-            //[{field: 'username',message:'somethingwrong'}]
-            setErrors(toErrorMap(res.data.login.errors));
-          } else if (res.data?.login.user) {
-            router.push("/home");
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <Box pt="10rem">
-              <InputField
-                name="usernameOrEmail"
-                label="Username or Email"
-                type="text"
-                placeholder="username or email"
-              />
-              <InputField
-                name="password"
-                label="Password"
-                type="password"
-                placeholder="password"
-              />
-              <Button type="submit" isLoading={isSubmitting}>
-                Log In
-              </Button>
-            </Box>
-          </Form>
-        )}
-      </Formik>
+              if (res.data?.login.errors) {
+                //this can be undefined
+                //if there is error
+                //[{field: 'username',message:'somethingwrong'}]
+                setErrors(toErrorMap(res.data.login.errors));
+              } else if (res.data?.login.user) {
+                router.push("/home");
+              }
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <Box
+                  textAlign="center"
+                  bg="#1d1b38"
+                  pt="2rem"
+                  pr="4rem"
+                  pb="7rem"
+                  pl="4rem"
+                  width="100%"
+                  height="100%"
+                  borderRadius="5px"
+                >
+                  <Text
+                    fontSize="6rem"
+                    fontWeight="700"
+                    color="#f05454"
+                    mb="-1rem"
+                  >
+                    Taku.
+                  </Text>
+                  <InputField
+                    name="usernameOrEmail"
+                    label="Username or Email"
+                    type="text"
+                    placeholder="username or email"
+                  />
+                  <InputField
+                    name="password"
+                    label="Password"
+                    type="password"
+                    placeholder="password"
+                  />
+                  <Button
+                    mt="2rem"
+                    width="100%"
+                    type="submit"
+                    isLoading={isSubmitting}
+                  >
+                    Log In
+                  </Button>
+                  <Text
+                    fontSize="1rem"
+                    fontWeight="700"
+                    color="#f05454"
+                    mb="-2rem"
+                    mt="5rem"
+                  >
+                    For otaku people
+                  </Text>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+        </Wrapper>
+      </Box>
     </>
   );
 };
