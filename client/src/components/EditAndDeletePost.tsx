@@ -33,18 +33,13 @@ export interface AnimePostContentProps {
 const EditAndDeletePost: React.FC<AnimePostContentProps> = ({ anime }) => {
   const { data: MeData, loading: MeLoading } = useMeQuery();
   const [deletePost, { loading: deleteLoading }] = useDeletePostMutation();
-  const { data, loading, fetchMore, variables } = useAnimePostsQuery({
-    variables: {
-      limit: 2,
-      cursor: "",
-    },
-  });
+
   return (
     <>
       {MeData?.me?.id === anime.creatorId ? (
         <>
           <NextLink href="/post/edit/[id]" as={`/post/edit/${anime.id}`}>
-            <Button as={Link} color="green">
+            <Button bg="#0f1123" as={Link} color="green">
               Edit
             </Button>
           </NextLink>
@@ -59,15 +54,10 @@ const EditAndDeletePost: React.FC<AnimePostContentProps> = ({ anime }) => {
                   });
                 },
               });
-              await fetchMore({
-                variables: {
-                  limit: 1,
-                  cursor:
-                    data.animePosts.animes[data.animePosts.animes.length - 1]
-                      .createdAt,
-                },
-              });
             }}
+            bg="#0f1123"
+            color="red"
+            ml="1rem"
           >
             Delete
           </Button>

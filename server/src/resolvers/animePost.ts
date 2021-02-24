@@ -1,4 +1,4 @@
-import { User } from "src/Entities/User";
+import { User } from "../Entities/User";
 import { MyContext } from "src/types";
 import {
   Arg,
@@ -41,6 +41,16 @@ class AnimePostInput {
   @Field()
   image_url!: string;
 }
+
+@ObjectType()
+export class PaginatedAnimeComments {
+  @Field()
+  hasMore?: boolean;
+
+  @Field(() => [Comment])
+  allComments?: Comment[];
+}
+
 @ObjectType()
 export class PaginatedAnimePosts {
   @Field()
@@ -121,15 +131,13 @@ export class AnimePostResolver {
   }
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async deletePost(
-    @Arg("id", () => Int) id: number,
-    @Ctx() { req }: MyContext
-  ): Promise<Boolean> {
+  async deletePost(@Arg("id", () => Int) id: number): Promise<Boolean> {
     try {
+      const deleteComments = await Comment.delete({ animePostId: id });
       const postDeleted = await AnimePost.delete({
-        creatorId: req.session.userId,
-        id: id,
+        id,
       });
+
       if (postDeleted) {
         return true;
       } else {
@@ -164,17 +172,26 @@ export class AnimePostResolver {
     @Arg("animePostId", () => Int) animePostId: number,
     @Arg("comment") comment: string,
     @Ctx() { req }: MyContext
-  ): Promise<Comment> {
-    return Comment.create({
+  ) {
+    const user = await User.findOne({ id: req.session.userId });
+    const newComment = await Comment.create({
       animePostId: animePostId,
       comment: comment,
       commentorId: req.session.userId,
     }).save();
+    return {
+      id: newComment.id,
+      comment: newComment.comment,
+      commentor: {
+        id: req.session.userId,
+        username: user?.username,
+      },
+    };
   }
-  @Mutation(() => [Comment])
+  @Query(() => PaginatedAnimeComments)
   async getAnimePostComment(
     @Arg("animePostId", () => Int) animePostId: number
-  ): Promise<Comment[]> {
+  ): Promise<PaginatedAnimeComments> {
     // const comments = await getConnection().query(`
     // select c.*
     // json_build_object(
@@ -189,12 +206,17 @@ export class AnimePostResolver {
 
     // order by c."createdAt" DESC
     // `);
+
     const comments = await Comment.find({
       where: { animePostId: animePostId },
       relations: ["commentor"],
       order: { createdAt: "ASC" },
     });
-    return comments;
+    console.log(comments);
+    return {
+      hasMore: true,
+      allComments: comments,
+    };
   }
   @Mutation(() => Boolean)
   async deleteComment(@Arg("id", () => Int) id: number) {

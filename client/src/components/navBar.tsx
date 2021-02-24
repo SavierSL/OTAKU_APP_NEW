@@ -25,33 +25,57 @@ const NavBar: React.FC<NavBarProps> = () => {
   }
   if (data?.me && !loading) {
     body = (
-      <Flex>
-        <NextLink href="/home">
-          <Link>HOME</Link>
-        </NextLink>
-        <NextLink href="profile">
-          <Link>PROFILE</Link>
-        </NextLink>
-        <NextLink href="/anime">
-          <Link>ANIMES</Link>
-        </NextLink>
-        <Button
-          onClick={async () => {
-            await logout();
-            router.push("/");
-            apolloClient.resetStore();
-          }}
-        >
-          Log out
-        </Button>
+      <Flex alignItems="center" justifyContent="center" p=".5rem" zIndex="1000">
+        <Box mr="2rem">
+          <NextLink href="/home">
+            <Link color="#f7f6e7">HOME</Link>
+          </NextLink>
+        </Box>
+        <Box mr="2rem">
+          <NextLink href="profile">
+            <Link color="#f7f6e7">PROFILE</Link>
+          </NextLink>
+        </Box>
+        <Box mr="2rem">
+          <NextLink href="/anime">
+            <Link color="#f7f6e7">ANIMES</Link>
+          </NextLink>
+        </Box>
+        <Box mr="2rem">
+          <Button
+            onClick={async () => {
+              await logout();
+              router.push("/");
+              apolloClient.resetStore();
+            }}
+            bg="#1e212d"
+            color="white"
+            _hover={{ bg: "teal.600" }}
+          >
+            Log out
+          </Button>
+        </Box>
       </Flex>
     );
   }
   return (
     <>
-      <Flex justifyContent="space-between">
-        <Text>Taku.</Text>
-        {body}
+      <Flex
+        justifyContent="space-between"
+        bg="blackAlpha.500"
+        alignItems="center"
+        position="fixed"
+        width="80%"
+        right="0"
+        zIndex="1000"
+      >
+        <Box p="1rem">
+          <Text fontSize="2rem" color="#f2a154">
+            Taku.
+          </Text>
+        </Box>
+
+        <Box p="1rem">{body}</Box>
       </Flex>
     </>
   );

@@ -11,6 +11,18 @@ const breakpoints: any = createBreakpoints({
 });
 
 const theme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        fontFamily: null,
+        margin: "0",
+        padding: "0",
+        fontSize: "18px",
+        fontWeight: "400",
+        lineHeight: "1.8",
+      },
+    },
+  },
   colors: {
     black: "#16161D",
   },

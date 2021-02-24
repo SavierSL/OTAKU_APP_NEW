@@ -28,7 +28,7 @@ export class AnimePost extends BaseEntity {
   @Column()
   creatorId!: number;
 
-  @Field()
+  @Field(() => User)
   @ManyToOne(() => User, (user) => user.animePost)
   creator: User;
 

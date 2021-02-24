@@ -32,7 +32,16 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
-      <I {...field} {...props} id={field.name} />
+      <I
+        {...field}
+        {...props}
+        id={field.name}
+        color="white"
+        border="2px"
+        borderColor="#0f1123"
+        bg="#0f1123"
+        mb="1rem"
+      />
       {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
     </FormControl>
   );

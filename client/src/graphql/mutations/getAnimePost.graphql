@@ -1,10 +1,13 @@
-mutation getAnimePostComment($animePostId: Int!) {
+query getAnimePostComment($animePostId: Int!) {
   getAnimePostComment(animePostId: $animePostId) {
-    id
-    comment
-    commentor {
+    hasMore
+    allComments {
       id
-      username
+      comment
+      commentor {
+        id
+        username
+      }
     }
   }
 }

@@ -1,7 +1,12 @@
 import { createWithApollo } from "./createWithApollo";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { NextPageContext } from "next";
-import { PaginatedAnimePosts } from "../generated/graphql";
+import {
+  CommentPostMutationResult,
+  GetAnimePostCommentQueryResult,
+  PaginatedAnimeComments,
+  PaginatedAnimePosts,
+} from "../generated/graphql";
 
 const createClient = (ctx: NextPageContext) =>
   new ApolloClient({
@@ -31,6 +36,28 @@ const createClient = (ctx: NextPageContext) =>
                 return {
                   ...incoming,
                   animes: [...(existing?.animes || []), ...incoming.animes],
+                };
+              },
+            },
+            getAnimePostComment: {
+              merge(
+                existing: PaginatedAnimeComments | undefined,
+                incoming: PaginatedAnimeComments | undefined
+              ): PaginatedAnimeComments {
+                //Adding new comments or updated
+
+                return {
+                  __typename: "PaginatedAnimeComments",
+                  ...incoming,
+                  allComments: [...(incoming?.allComments || [])],
+
+                  // data: {
+                  //   __typename: "Query",
+                  //   getAnimePostComment: [
+                  //     ...(existing.data.getAnimePostComment || []),
+                  //     ...incoming.data.getAnimePostComment,
+                  //   ],
+                  // },
                 };
               },
             },

@@ -2,8 +2,14 @@ import {
   useMeQuery,
   useCommentPostMutation,
   useDeleteCommentMutation,
-  useGetAnimePostCommentMutation,
+  useGetAnimePostCommentQuery,
   useUpdateCommentMutation,
+  CommentPostMutation,
+  PaginatedAnimePosts,
+  CommentPostDocument,
+  AnimePostDocument,
+  GetAnimePostCommentDocument,
+  GetAnimePostCommentQuery,
 } from "../generated/graphql";
 import { Flex, Image, Text, Link, Box, Button } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -11,121 +17,168 @@ import { withApollo } from "../utils/withApollo";
 import { Comment } from "../generated/graphql";
 import { Form, Formik } from "formik";
 import InputField from "../components/inputField";
+import CommentContainer from "../components/commentContainer";
+import { ApolloCache, gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 
 export interface CommentsProps {
   animePostId: number;
 }
 
 const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
-  const { data: MeData, loading: MeLoading } = useMeQuery();
+  const apolloClient = useApolloClient();
   const [commetPost] = useCommentPostMutation();
-  const [comments, { loading }] = useGetAnimePostCommentMutation();
-  const [
-    deleteComment,
-    { loading: deleteLoading },
-  ] = useDeleteCommentMutation();
-  const [updateComment] = useUpdateCommentMutation();
-  const [openComment, setOpentComment] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [animeComments, setAnimeComments] = useState([]);
-  const [commented, setCommented] = useState(false);
-  const getComments = async (animePostId: number) => {
-    const res = await comments({ variables: { animePostId: animePostId } });
-    setAnimeComments(res.data.getAnimePostComment);
-  };
-  useEffect(() => {
-    getComments(animePostId);
-  }, [commented]);
+  const { data, loading, fetchMore } = useGetAnimePostCommentQuery({
+    variables: { animePostId: animePostId },
+  });
 
+  const [openComment, setOpentComment] = useState(false);
+  const [commented, setCommented] = useState(false);
+  // const getComments = async (animePostId: number) => {
+  //   const res = await comments({ variables: { animePostId: animePostId } });
+  //   setAnimeComments(res.data.getAnimePostComment);
+  // };
+  if (!loading && !data) {
+    return <div>You have no post </div>;
+  }
+  console.log(data);
   return (
     <>
-      <Text onClick={() => setOpentComment(!openComment)}>
-        Comments {animeComments.length}
-      </Text>
-      {openComment && animeComments.length !== 0 ? (
-        <Box height="100%">
-          {animeComments.map((comment: Comment) => {
-            return (
-              <>
-                <Box mt="2rem">
-                  <Text>{comment.comment}</Text>
-                  <Text>{comment.commentor.username}</Text>
-                  {MeData.me.id === comment.commentor.id ? (
-                    <>
-                      <Button onClick={() => setOpenEdit(!openEdit)}>
-                        Edit
-                      </Button>
-                      {openEdit ? (
-                        <Formik
-                          initialValues={{ newComment: "" }}
-                          onSubmit={({ newComment }, { resetForm }) => {
-                            updateComment({
-                              variables: {
-                                comment: newComment,
-                                id: comment.id,
-                              },
-                            });
-                            setCommented(!commented);
-                            resetForm({ values: { newComment: "" } });
-                          }}
-                        >
-                          {({ isSubmitting }) => (
-                            <Form>
-                              <InputField
-                                name="newComment"
-                                type="text"
-                                placeholder="edit comment"
-                              />
-                              <Button type="submit" isLoading={isSubmitting}>
-                                Edit
-                              </Button>
-                            </Form>
-                          )}
-                        </Formik>
-                      ) : (
-                        ""
-                      )}
-                      <Button
-                        onClick={async () => {
-                          await deleteComment({
-                            variables: { id: comment.id },
-                          });
-                          setCommented(!commented);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </Box>
-              </>
-            );
-          })}
-        </Box>
+      {!data && loading ? (
+        <></>
       ) : (
-        ""
-      )}
-      <Formik
-        initialValues={{ comment: "" }}
-        onSubmit={async ({ comment }, { resetForm }) => {
-          await commetPost({ variables: { animePostId, comment } });
-          setCommented(!commented);
-          resetForm({ values: { comment: "" } }); //to reset form
+        <>
+          <Box width="100%" pl="4rem" pr="4rem">
+            <Box w="7rem">
+              <Text
+                onClick={() => setOpentComment(!openComment)}
+                mb="1rem"
+                cursor="pointer"
+                color="#fff"
+              >
+                Comments {data?.getAnimePostComment?.allComments.length}
+              </Text>
+            </Box>
 
-          return;
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField name="comment" placeholder="comment" type="text" />
-            <Button type="submit" isLoading={isSubmitting}>
-              comment
-            </Button>
-          </Form>
-        )}
-      </Formik>
+            {openComment ? (
+              <Box height="80%">
+                {data!.getAnimePostComment?.allComments.map(
+                  (comment: Comment) => {
+                    return (
+                      <>
+                        <CommentContainer
+                          comment={comment}
+                          setCommented={setCommented}
+                          commented={commented}
+                        />
+                      </>
+                    );
+                  }
+                )}
+              </Box>
+            ) : (
+              ""
+            )}
+            <Formik
+              initialValues={{ comment: "" }}
+              onSubmit={async ({ comment }, { resetForm }) => {
+                commetPost({
+                  variables: { animePostId, comment },
+                  // update: (cache, { data }) => {
+                  //   const cacheId = cache.identify(data.commentPost);
+                  //   cache.modify({
+                  //     fields: {
+                  //       getAnimePostComment: (existingFieldData, { toReference }) => {
+                  //         return [...existingFieldData, toReference(cacheId)];
+                  //       },
+                  //     },
+                  //   });
+                  // },
+
+                  refetchQueries: [
+                    {
+                      query: GetAnimePostCommentDocument,
+                      variables: {
+                        animePostId,
+                      },
+                    },
+                  ],
+                  // update: (cache, { data }) => {
+                  //   cache.modify({
+                  //     id: cache.identify(Comment),
+                  //   });
+                  //   const query = cache.readQuery<GetAnimePostCommentQuery>({
+                  //     query: GetAnimePostCommentDocument,
+
+                  //     variables: {
+                  //       animePostId,
+                  //     },
+                  //   });
+
+                  //   cache.writeQuery({
+                  //     query,
+                  //     data: {
+                  //       __typename: "Query",
+                  //       getAnimePostComment: {
+                  //         __typename: "PaginatedAnimeComments",
+                  //         hasMore: true,
+                  //         allComments: [
+                  //           ...query.getAnimePostComment.allComments,
+                  //           data!.commentPost,
+                  //         ],
+                  //       },
+                  //     },
+                  //   });
+                  // },
+                  // update: (cache, { data }) => {
+                  //   const commentData = cache.readQuery<GetAnimePostCommentQuery>(
+                  //     {
+                  //       query: GetAnimePostCommentDocument,
+                  //     }
+                  //   );
+                  //   const newData = cache.writeQuery<GetAnimePostCommentQuery>({
+                  //     query: GetAnimePostCommentDocument,
+
+                  //     data: {
+                  //       __typename: "Query",
+                  //       getAnimePostComment: {
+                  //         __typename: "PaginatedAnimeComments",
+                  //         hasMore: true,
+                  //         allComments: [
+                  //           ...commentData.getAnimePostComment.allComments,
+                  //           data.commentPost,
+                  //         ],
+                  //       },
+                  //     },
+                  //   });
+                  //   console.log(newData);
+                  // },
+                });
+
+                setCommented(!commented);
+                resetForm({ values: { comment: "" } }); //to reset form
+
+                return;
+              }}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <Box p=".5rem" pb="2rem" mt="-1rem">
+                    <InputField
+                      name="comment"
+                      placeholder="comment"
+                      type="text"
+                    />
+                    <Button type="submit" isLoading={isSubmitting}>
+                      comment
+                    </Button>
+                  </Box>
+                </Form>
+              )}
+            </Formik>
+          </Box>
+        </>
+      )}
     </>
   );
 };

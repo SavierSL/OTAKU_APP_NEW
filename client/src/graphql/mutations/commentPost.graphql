@@ -2,7 +2,9 @@ mutation commentPost($animePostId: Int!, $comment: String!) {
   commentPost(animePostId: $animePostId, comment: $comment) {
     id
     comment
-    commentorId
-    animePostId
+    commentor {
+      id
+      username
+    }
   }
 }

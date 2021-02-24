@@ -18,6 +18,7 @@ export type Query = {
   hello: Scalars['String'];
   animePost: AnimePost;
   animePosts: PaginatedAnimePosts;
+  getAnimePostComment: PaginatedAnimeComments;
   me?: Maybe<User>;
 };
 
@@ -30,6 +31,11 @@ export type QueryAnimePostArgs = {
 export type QueryAnimePostsArgs = {
   cursor?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
+};
+
+
+export type QueryGetAnimePostCommentArgs = {
+  animePostId: Scalars['Int'];
 };
 
 export type AnimePost = {
@@ -74,13 +80,18 @@ export type PaginatedAnimePosts = {
   animes: Array<AnimePost>;
 };
 
+export type PaginatedAnimeComments = {
+  __typename?: 'PaginatedAnimeComments';
+  hasMore: Scalars['Boolean'];
+  allComments: Array<Comment>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAnimePost: AnimePost;
   deletePost: Scalars['Boolean'];
   updatePost: AnimePost;
   commentPost: Comment;
-  getAnimePostComment: Array<Comment>;
   deleteComment: Scalars['Boolean'];
   updateComment: Comment;
   register: ResponseField;
@@ -109,11 +120,6 @@ export type MutationUpdatePostArgs = {
 
 export type MutationCommentPostArgs = {
   comment: Scalars['String'];
-  animePostId: Scalars['Int'];
-};
-
-
-export type MutationGetAnimePostCommentArgs = {
   animePostId: Scalars['Int'];
 };
 
@@ -235,7 +241,11 @@ export type CommentPostMutation = (
   { __typename?: 'Mutation' }
   & { commentPost: (
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'comment' | 'commentorId' | 'animePostId'>
+    & Pick<Comment, 'id' | 'comment'>
+    & { commentor: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
   ) }
 );
 
@@ -277,21 +287,25 @@ export type DeletePostMutation = (
   & Pick<Mutation, 'deletePost'>
 );
 
-export type GetAnimePostCommentMutationVariables = Exact<{
+export type GetAnimePostCommentQueryVariables = Exact<{
   animePostId: Scalars['Int'];
 }>;
 
 
-export type GetAnimePostCommentMutation = (
-  { __typename?: 'Mutation' }
-  & { getAnimePostComment: Array<(
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'comment'>
-    & { commentor: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
+export type GetAnimePostCommentQuery = (
+  { __typename?: 'Query' }
+  & { getAnimePostComment: (
+    { __typename?: 'PaginatedAnimeComments' }
+    & Pick<PaginatedAnimeComments, 'hasMore'>
+    & { allComments: Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'comment'>
+      & { commentor: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      ) }
+    )> }
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -485,8 +499,10 @@ export const CommentPostDocument = gql`
   commentPost(animePostId: $animePostId, comment: $comment) {
     id
     comment
-    commentorId
-    animePostId
+    commentor {
+      id
+      username
+    }
   }
 }
     `;
@@ -623,42 +639,46 @@ export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutati
 export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
 export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
 export const GetAnimePostCommentDocument = gql`
-    mutation getAnimePostComment($animePostId: Int!) {
+    query getAnimePostComment($animePostId: Int!) {
   getAnimePostComment(animePostId: $animePostId) {
-    id
-    comment
-    commentor {
+    hasMore
+    allComments {
       id
-      username
+      comment
+      commentor {
+        id
+        username
+      }
     }
   }
 }
     `;
-export type GetAnimePostCommentMutationFn = Apollo.MutationFunction<GetAnimePostCommentMutation, GetAnimePostCommentMutationVariables>;
 
 /**
- * __useGetAnimePostCommentMutation__
+ * __useGetAnimePostCommentQuery__
  *
- * To run a mutation, you first call `useGetAnimePostCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useGetAnimePostCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetAnimePostCommentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAnimePostCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [getAnimePostCommentMutation, { data, loading, error }] = useGetAnimePostCommentMutation({
+ * const { data, loading, error } = useGetAnimePostCommentQuery({
  *   variables: {
  *      animePostId: // value for 'animePostId'
  *   },
  * });
  */
-export function useGetAnimePostCommentMutation(baseOptions?: Apollo.MutationHookOptions<GetAnimePostCommentMutation, GetAnimePostCommentMutationVariables>) {
-        return Apollo.useMutation<GetAnimePostCommentMutation, GetAnimePostCommentMutationVariables>(GetAnimePostCommentDocument, baseOptions);
+export function useGetAnimePostCommentQuery(baseOptions: Apollo.QueryHookOptions<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>) {
+        return Apollo.useQuery<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>(GetAnimePostCommentDocument, baseOptions);
       }
-export type GetAnimePostCommentMutationHookResult = ReturnType<typeof useGetAnimePostCommentMutation>;
-export type GetAnimePostCommentMutationResult = Apollo.MutationResult<GetAnimePostCommentMutation>;
-export type GetAnimePostCommentMutationOptions = Apollo.BaseMutationOptions<GetAnimePostCommentMutation, GetAnimePostCommentMutationVariables>;
+export function useGetAnimePostCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>) {
+          return Apollo.useLazyQuery<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>(GetAnimePostCommentDocument, baseOptions);
+        }
+export type GetAnimePostCommentQueryHookResult = ReturnType<typeof useGetAnimePostCommentQuery>;
+export type GetAnimePostCommentLazyQueryHookResult = ReturnType<typeof useGetAnimePostCommentLazyQuery>;
+export type GetAnimePostCommentQueryResult = Apollo.QueryResult<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>;
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

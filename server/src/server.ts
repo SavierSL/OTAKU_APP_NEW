@@ -37,9 +37,10 @@ const main = async () => {
     synchronize: true,
     entities: [AnimePost, User, Profile, Comment],
   });
+  // await Comment.delete({});
   // await AnimePost.delete({});
-  // await User.delete({});
-  // //runnnnn ittt
+  // await User.delete({});a
+  // //runnnnn ittta
   const app = express();
 
   //2 cookie Redis

@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -32,6 +32,7 @@ const Index: React.FC<IndexProps> = () => {
   return (
     <>
       <NavBar />
+      <Text color="white">Taku.</Text>
       <Formik
         initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
@@ -59,21 +60,23 @@ const Index: React.FC<IndexProps> = () => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <InputField
-              name="usernameOrEmail"
-              label="Username or Email"
-              type="text"
-              placeholder="username or email"
-            />
-            <InputField
-              name="password"
-              label="Password"
-              type="password"
-              placeholder="password"
-            />
-            <Button type="submit" isLoading={isSubmitting}>
-              Log In
-            </Button>
+            <Box pt="10rem">
+              <InputField
+                name="usernameOrEmail"
+                label="Username or Email"
+                type="text"
+                placeholder="username or email"
+              />
+              <InputField
+                name="password"
+                label="Password"
+                type="password"
+                placeholder="password"
+              />
+              <Button type="submit" isLoading={isSubmitting}>
+                Log In
+              </Button>
+            </Box>
           </Form>
         )}
       </Formik>
