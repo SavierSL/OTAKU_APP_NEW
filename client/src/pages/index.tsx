@@ -1,8 +1,9 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Text, Link, Flex } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import InputField from "../components/inputField";
+import NextLink from "next/link";
 import NavBar from "../components/navBar";
 import Wrapper from "../components/wrapper";
 import {
@@ -72,14 +73,23 @@ const Index: React.FC<IndexProps> = () => {
                   height="100%"
                   borderRadius="5px"
                 >
-                  <Text
-                    fontSize="6rem"
-                    fontWeight="700"
-                    color="#f05454"
-                    mb="-1rem"
+                  <Flex
+                    justifyContent="center"
+                    alignItems="flex-end"
+                    alignContent="center"
                   >
-                    Taku.
-                  </Text>
+                    <Text fontSize="3rem" fontWeight="700" color="#fff">
+                      Log In to
+                    </Text>
+                    <Text
+                      ml="1rem"
+                      fontSize="3rem"
+                      fontWeight="700"
+                      color="#f05454"
+                    >
+                      Taku.
+                    </Text>
+                  </Flex>
                   <InputField
                     name="usernameOrEmail"
                     label="Username or Email"
@@ -100,12 +110,21 @@ const Index: React.FC<IndexProps> = () => {
                   >
                     Log In
                   </Button>
+                  <Box mt="2rem">
+                    <Text color="white">
+                      You don't have an account?
+                      <NextLink href="/register">
+                        <Link color="lightblue">Register</Link>
+                      </NextLink>
+                    </Text>
+                  </Box>
+
                   <Text
                     fontSize="1rem"
                     fontWeight="700"
                     color="#f05454"
                     mb="-2rem"
-                    mt="5rem"
+                    mt="2rem"
                   >
                     For otaku people
                   </Text>

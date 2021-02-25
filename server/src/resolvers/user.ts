@@ -103,12 +103,14 @@ export class UserResolver {
         ? { where: { email: usernameOrEmail } }
         : { where: { username: usernameOrEmail } }
     );
+    console.log(user);
     if (!user) {
+      console.log("ran");
       return {
         errors: [
           {
-            field: "Cannot find post",
-            message: "No user",
+            field: "usernameOrEmail",
+            message: "can't find username or email",
           },
         ],
       };
