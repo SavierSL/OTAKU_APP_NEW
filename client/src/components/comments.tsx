@@ -52,7 +52,6 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
             <Box w="7rem">
               <Text
                 onClick={() => setOpentComment(!openComment)}
-                mb="1rem"
                 cursor="pointer"
                 color="#fff"
               >
@@ -163,13 +162,13 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
             >
               {({ isSubmitting }) => (
                 <Form>
-                  <Box p=".5rem" pb="2rem" mt="-1rem">
+                  <Box p=".5rem 0 .5rem 0" pb="2rem" mt="1rem">
                     <InputField
                       name="comment"
                       placeholder="comment"
                       type="text"
                     />
-                    <Button type="submit" isLoading={isSubmitting}>
+                    <Button mt=".5rem" type="submit" isLoading={isSubmitting}>
                       comment
                     </Button>
                   </Box>
