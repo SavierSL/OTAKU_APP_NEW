@@ -30,27 +30,25 @@ export interface Anime {
   score: string;
   image_url: string;
 }
-
+export const getAnime = async (animeTitle: string) => {
+  const res = await fetch(
+    `https://jikan1.p.rapidapi.com/search/anime?q=${animeTitle}`,
+    {
+      method: "GET",
+      headers: {
+        "x-rapidapi-key": "0a1e2916a5msh44da6893e3cecdbp108d8bjsne9ac3d4c9fd4",
+        "x-rapidapi-host": "jikan1.p.rapidapi.com",
+      },
+    }
+  );
+  const animes = await res.json();
+  return animes.results;
+};
 const CreatePost: React.FC<CreatePostProps> = () => {
   const router = useRouter();
   const { data: MeData, loading: MeLoading } = useMeQuery();
   const [animes, setAnimes] = useState([]);
   const [animePost, setAnimePost] = useState<Anime>(null);
-  const getAnime = async (animeTitle: string) => {
-    const res = await fetch(
-      `https://jikan1.p.rapidapi.com/search/anime?q=${animeTitle}`,
-      {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key":
-            "0a1e2916a5msh44da6893e3cecdbp108d8bjsne9ac3d4c9fd4",
-          "x-rapidapi-host": "jikan1.p.rapidapi.com",
-        },
-      }
-    );
-    const animes = await res.json();
-    return animes.results;
-  };
 
   if (!MeData?.me && !MeLoading) {
     // if it failed this next query will be added and the router.pathname, it is depend on the url 'dynamic'
@@ -66,10 +64,11 @@ const CreatePost: React.FC<CreatePostProps> = () => {
         <Link>HOME</Link>
       </NextLink>
       <Formik
-        initialValues={{ title: "", text: "" }}
+        initialValues={{ title: "" }}
         onSubmit={async (values) => {
           const data = await getAnime(values.title);
           setAnimes(data.slice(0, 5));
+          console.log(data);
           return data;
         }}
       >

@@ -4,11 +4,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Anime } from "./FavAnime";
 
 import { User } from "./User";
 
@@ -22,7 +24,15 @@ export class Profile extends BaseEntity {
 
   @Field()
   @Column()
-  favouriteAnimes!: string;
+  bio!: string;
+
+  @Field(() => Int)
+  @Column()
+  age!: number;
+
+  @Field()
+  @Column()
+  country!: string;
 
   @Field()
   @Column()
@@ -34,6 +44,9 @@ export class Profile extends BaseEntity {
 
   @OneToOne(() => User, (user) => user.profile) // specify inverse side as a second parameter
   user: User;
+
+  @OneToMany(() => Anime, (anime) => anime.fan)
+  favAnimes: Anime[];
 
   @Field(() => String)
   @CreateDateColumn()

@@ -22,6 +22,7 @@ const AnimeContent: React.FC<AnimeContentProps> = ({ animePost }) => {
       onSubmit={async ({ text }) => {
         createAnimePost({
           variables: { text, ...animePost },
+          //to see a new post we need to evict it
           update: (cache) => {
             console.log(cache);
             cache.evict({ fieldName: "animePosts" });

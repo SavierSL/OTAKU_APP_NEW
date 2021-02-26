@@ -75,8 +75,9 @@ const Index: React.FC<IndexProps> = () => {
                 >
                   <Flex
                     justifyContent="center"
-                    alignItems="flex-end"
+                    alignItems="center"
                     alignContent="center"
+                    flexDirection={{ sm: "column", md: "row" }}
                   >
                     <Text fontSize="3rem" fontWeight="700" color="#fff">
                       Log In to

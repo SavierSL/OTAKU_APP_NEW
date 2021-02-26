@@ -1,0 +1,9 @@
+query getFavAnimes {
+  getFavAnimes {
+    favAnimeList {
+      title
+      image_url
+      id
+    }
+  }
+}

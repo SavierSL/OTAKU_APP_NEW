@@ -1,0 +1,21 @@
+mutation addFavAnime(
+  $title: String!
+  $rated: String!
+  $score: Int!
+  $image_url: String!
+  $synopsis: String!
+) {
+  addFavAnime(
+    input: {
+      title: $title
+      rated: $rated
+      score: $score
+      image_url: $image_url
+      synopsis: $synopsis
+    }
+  ) {
+    title
+    image_url
+    id
+  }
+}

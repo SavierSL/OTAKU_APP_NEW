@@ -20,6 +20,7 @@ export type Query = {
   animePosts: PaginatedAnimePosts;
   getAnimePostComment: PaginatedAnimeComments;
   me?: Maybe<User>;
+  getFavAnimes: PaginatedFavAnimes;
 };
 
 
@@ -86,6 +87,22 @@ export type PaginatedAnimeComments = {
   allComments: Array<Comment>;
 };
 
+export type PaginatedFavAnimes = {
+  __typename?: 'PaginatedFavAnimes';
+  favAnimeList: Array<Anime>;
+};
+
+export type Anime = {
+  __typename?: 'Anime';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  fanId: Scalars['Float'];
+  rated: Scalars['String'];
+  synopsis: Scalars['String'];
+  score: Scalars['Float'];
+  image_url: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAnimePost: AnimePost;
@@ -97,7 +114,8 @@ export type Mutation = {
   register: ResponseField;
   login: ResponseField;
   logout: Scalars['Boolean'];
-  createProfile: Profile;
+  addFavAnime: Anime;
+  removeFavAnime: Scalars['Boolean'];
 };
 
 
@@ -146,8 +164,13 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateProfileArgs = {
-  input: ProfileInput;
+export type MutationAddFavAnimeArgs = {
+  input: FavAnimeInput;
+};
+
+
+export type MutationRemoveFavAnimeArgs = {
+  id: Scalars['Float'];
 };
 
 export type AnimePostInput = {
@@ -177,20 +200,30 @@ export type UserInput = {
   password: Scalars['String'];
 };
 
-export type Profile = {
-  __typename?: 'Profile';
-  id: Scalars['Int'];
-  favouriteAnimes: Scalars['String'];
-  mostFavouriteCharacter: Scalars['String'];
-  userId: Scalars['Float'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+export type FavAnimeInput = {
+  title: Scalars['String'];
+  rated: Scalars['String'];
+  synopsis: Scalars['String'];
+  score: Scalars['Int'];
+  image_url: Scalars['String'];
 };
 
-export type ProfileInput = {
-  favouriteAnimes: Scalars['String'];
-  mostFavouriteCharacter: Scalars['String'];
-};
+export type AddFavAnimeMutationVariables = Exact<{
+  title: Scalars['String'];
+  rated: Scalars['String'];
+  score: Scalars['Int'];
+  image_url: Scalars['String'];
+  synopsis: Scalars['String'];
+}>;
+
+
+export type AddFavAnimeMutation = (
+  { __typename?: 'Mutation' }
+  & { addFavAnime: (
+    { __typename?: 'Anime' }
+    & Pick<Anime, 'title' | 'image_url' | 'id'>
+  ) }
+);
 
 export type AnimePostQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -308,6 +341,20 @@ export type GetAnimePostCommentQuery = (
   ) }
 );
 
+export type GetFavAnimesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFavAnimesQuery = (
+  { __typename?: 'Query' }
+  & { getFavAnimes: (
+    { __typename?: 'PaginatedFavAnimes' }
+    & { favAnimeList: Array<(
+      { __typename?: 'Anime' }
+      & Pick<Anime, 'title' | 'image_url' | 'id'>
+    )> }
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -398,6 +445,46 @@ export type UpdatePostMutation = (
 );
 
 
+export const AddFavAnimeDocument = gql`
+    mutation addFavAnime($title: String!, $rated: String!, $score: Int!, $image_url: String!, $synopsis: String!) {
+  addFavAnime(
+    input: {title: $title, rated: $rated, score: $score, image_url: $image_url, synopsis: $synopsis}
+  ) {
+    title
+    image_url
+    id
+  }
+}
+    `;
+export type AddFavAnimeMutationFn = Apollo.MutationFunction<AddFavAnimeMutation, AddFavAnimeMutationVariables>;
+
+/**
+ * __useAddFavAnimeMutation__
+ *
+ * To run a mutation, you first call `useAddFavAnimeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddFavAnimeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addFavAnimeMutation, { data, loading, error }] = useAddFavAnimeMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      rated: // value for 'rated'
+ *      score: // value for 'score'
+ *      image_url: // value for 'image_url'
+ *      synopsis: // value for 'synopsis'
+ *   },
+ * });
+ */
+export function useAddFavAnimeMutation(baseOptions?: Apollo.MutationHookOptions<AddFavAnimeMutation, AddFavAnimeMutationVariables>) {
+        return Apollo.useMutation<AddFavAnimeMutation, AddFavAnimeMutationVariables>(AddFavAnimeDocument, baseOptions);
+      }
+export type AddFavAnimeMutationHookResult = ReturnType<typeof useAddFavAnimeMutation>;
+export type AddFavAnimeMutationResult = Apollo.MutationResult<AddFavAnimeMutation>;
+export type AddFavAnimeMutationOptions = Apollo.BaseMutationOptions<AddFavAnimeMutation, AddFavAnimeMutationVariables>;
 export const AnimePostDocument = gql`
     query animePost($id: Int!) {
   animePost(id: $id) {
@@ -679,6 +766,42 @@ export function useGetAnimePostCommentLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetAnimePostCommentQueryHookResult = ReturnType<typeof useGetAnimePostCommentQuery>;
 export type GetAnimePostCommentLazyQueryHookResult = ReturnType<typeof useGetAnimePostCommentLazyQuery>;
 export type GetAnimePostCommentQueryResult = Apollo.QueryResult<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>;
+export const GetFavAnimesDocument = gql`
+    query getFavAnimes {
+  getFavAnimes {
+    favAnimeList {
+      title
+      image_url
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFavAnimesQuery__
+ *
+ * To run a query within a React component, call `useGetFavAnimesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFavAnimesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFavAnimesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFavAnimesQuery(baseOptions?: Apollo.QueryHookOptions<GetFavAnimesQuery, GetFavAnimesQueryVariables>) {
+        return Apollo.useQuery<GetFavAnimesQuery, GetFavAnimesQueryVariables>(GetFavAnimesDocument, baseOptions);
+      }
+export function useGetFavAnimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFavAnimesQuery, GetFavAnimesQueryVariables>) {
+          return Apollo.useLazyQuery<GetFavAnimesQuery, GetFavAnimesQueryVariables>(GetFavAnimesDocument, baseOptions);
+        }
+export type GetFavAnimesQueryHookResult = ReturnType<typeof useGetFavAnimesQuery>;
+export type GetFavAnimesLazyQueryHookResult = ReturnType<typeof useGetFavAnimesLazyQuery>;
+export type GetFavAnimesQueryResult = Apollo.QueryResult<GetFavAnimesQuery, GetFavAnimesQueryVariables>;
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

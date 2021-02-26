@@ -4,8 +4,13 @@ import { NextPageContext } from "next";
 import {
   CommentPostMutationResult,
   GetAnimePostCommentQueryResult,
+  GetFavAnimesLazyQueryHookResult,
+  GetFavAnimesQuery,
+  GetFavAnimesQueryResult,
+  GetFavAnimesQueryVariables,
   PaginatedAnimeComments,
   PaginatedAnimePosts,
+  PaginatedFavAnimes,
 } from "../generated/graphql";
 
 const createClient = (ctx: NextPageContext) =>
@@ -35,6 +40,7 @@ const createClient = (ctx: NextPageContext) =>
                 //Adding new posts
                 return {
                   ...incoming,
+                  //we need to add existing for the load more
                   animes: [...(existing?.animes || []), ...incoming.animes],
                 };
               },
@@ -49,6 +55,8 @@ const createClient = (ctx: NextPageContext) =>
                 return {
                   __typename: "PaginatedAnimeComments",
                   ...incoming,
+                  //we need the incoming bc we are using a variables in this query
+                  //so we need the incoming posts only
                   allComments: [...(incoming?.allComments || [])],
 
                   // data: {

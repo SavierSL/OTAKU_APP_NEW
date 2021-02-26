@@ -18,6 +18,7 @@ import { UserResolver } from "./resolvers/user";
 import { PorfileResolver } from "./resolvers/profile";
 import { Profile } from "./Entities/Profile";
 import { Comment } from "./Entities/Comment";
+import { Anime } from "./Entities/FavAnime";
 
 //declare this for the session
 declare module "express-session" {
@@ -35,11 +36,14 @@ const main = async () => {
     password: "xxkaa548",
     logging: true,
     synchronize: true,
-    entities: [AnimePost, User, Profile, Comment],
+    entities: [AnimePost, User, Profile, Comment, Anime],
   });
+  // await Anime.delete({});
+  // await User.delete({});
+  // await Profile.delete({});
   // await Comment.delete({});
-  // await AnimePost.delete({});
-  // await User.delete({});a
+  // await AnimePost.delete({});/
+
   // //runnnnn ittta
   const app = express();
 

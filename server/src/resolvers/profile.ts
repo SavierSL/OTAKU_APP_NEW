@@ -1,35 +1,86 @@
 import { Profile } from "../Entities/Profile";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Field,
+  InputType,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
+import { Anime } from "../Entities/FavAnime";
 // import { getConnection } from "typeorm";
-
 @InputType()
-class ProfileInput {
-  @Field(() => String)
-  favouriteAnimes: string;
+class favAnimeInput {
+  @Field()
+  title!: string;
 
-  @Field(() => String)
-  mostFavouriteCharacter: string;
+  @Field()
+  rated!: string;
+
+  @Field()
+  synopsis!: string;
+
+  @Field(() => Int)
+  score!: number;
+
+  @Field()
+  image_url!: string;
+}
+@ObjectType()
+class PaginatedFavAnimes {
+  @Field(() => [Anime])
+  favAnimeList?: Anime[];
 }
 
 @Resolver()
 export class PorfileResolver {
-  @Mutation(() => Profile)
-  async createProfile(
-    @Arg("input") input: ProfileInput,
-    @Ctx() { req }: MyContext
-  ): Promise<Profile | Boolean> {
-    const isProfile = await Profile.findOne({ userId: req.session.userId });
-    if (isProfile) {
-      throw new Error("Already created a profile");
-    }
-    try {
-      return Profile.create({
-        ...input,
-        userId: req.session.userId,
-      }).save();
-    } catch (error) {
-      return false;
-    }
+  @Mutation(() => Anime)
+  async addFavAnime(
+    @Arg("input") input: favAnimeInput,
+    @Ctx()
+    { req }: MyContext
+  ) {
+    const createFavAnime = Anime.create({
+      fanId: req.session.userId,
+      ...input,
+    }).save();
+    return createFavAnime;
   }
+
+  @Mutation(() => Boolean)
+  async removeFavAnime(
+    @Arg("id") id: number,
+    @Ctx()
+    { req }: MyContext
+  ): Promise<Boolean> {
+    const deleteFavAnime = Anime.delete({
+      fanId: req.session.userId,
+      id,
+    });
+    if (deleteFavAnime) {
+      return true;
+    }
+    return false;
+  }
+  @Query(() => PaginatedFavAnimes)
+  async getFavAnimes(@Ctx() { req }: MyContext): Promise<PaginatedFavAnimes> {
+    const favAnimes = await Anime.find({
+      where: { fanId: req.session.userId },
+    });
+    return {
+      favAnimeList: favAnimes,
+    };
+  }
+
+  // @Mutation(() => Profile)
+  // async createProfile(
+  //   @Arg("bio") bio: string,
+  //   @Arg("age") age: number,
+  //   @Arg("country") country: string,
+  //   @Arg("mostFavouriteCharacter") mostFavouriteCharacter: string
+  // ) {}
 }

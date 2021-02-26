@@ -37,6 +37,7 @@ const Home: React.FC<IndexProps> = () => {
       router.push("/");
     }
   }, []);
+  console.log(data);
   return (
     <Layout>
       {MeData?.me ? (
@@ -49,6 +50,7 @@ const Home: React.FC<IndexProps> = () => {
               height="100vh"
               position="fixed"
               pt="2.5rem"
+              display={{ sm: "none", md: "block" }}
             >
               <Flex alignItems="flex-start" flexDirection="column" p="3rem">
                 <Text color="white">{MeData.me.username}</Text>
@@ -61,6 +63,18 @@ const Home: React.FC<IndexProps> = () => {
                       _hover={{ bg: "teal.600" }}
                     >
                       Create Post
+                    </Button>
+                  </Link>
+                </NextLink>
+                <NextLink href="create-profile">
+                  <Link color="white">
+                    <Button
+                      mt="1rem"
+                      width="12rem"
+                      bg="#1e212d"
+                      _hover={{ bg: "teal.600" }}
+                    >
+                      Create Profile
                     </Button>
                   </Link>
                 </NextLink>
