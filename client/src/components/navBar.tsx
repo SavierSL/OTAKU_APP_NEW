@@ -25,7 +25,7 @@ const NavBar: React.FC<NavBarProps> = () => {
   }
   if (data?.me && !loading) {
     body = (
-      <Flex alignItems="center" justifyContent="center" p=".5rem" zIndex="1000">
+      <Flex alignItems="center" justifyContent="center" p="1rem" zIndex="1000">
         <Box mr="2rem">
           <NextLink href="/home">
             <Link color="#f7f6e7">HOME</Link>
@@ -59,7 +59,12 @@ const NavBar: React.FC<NavBarProps> = () => {
     );
   }
   return (
-    <>
+    <Flex position="fixed" zIndex="1000">
+      <Box p="1rem 0rem 0rem 3rem">
+        <Text fontSize="2rem" pt=".5rem" color="#f2a154">
+          Taku.
+        </Text>
+      </Box>
       <Flex
         justifyContent="space-between"
         bg="blackAlpha.500"
@@ -69,15 +74,9 @@ const NavBar: React.FC<NavBarProps> = () => {
         right="0"
         zIndex="1000"
       >
-        <Box p="1rem">
-          <Text fontSize="2rem" color="#f2a154">
-            Taku.
-          </Text>
-        </Box>
-
         <Box p="1rem">{body}</Box>
       </Flex>
-    </>
+    </Flex>
   );
 };
 

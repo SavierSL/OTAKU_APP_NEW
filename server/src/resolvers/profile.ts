@@ -53,7 +53,7 @@ export class PorfileResolver {
 
   @Mutation(() => Boolean)
   async removeFavAnime(
-    @Arg("id") id: number,
+    @Arg("id", () => Int) id: number,
     @Ctx()
     { req }: MyContext
   ): Promise<Boolean> {

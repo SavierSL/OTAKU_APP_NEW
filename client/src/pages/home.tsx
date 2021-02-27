@@ -42,14 +42,13 @@ const Home: React.FC<IndexProps> = () => {
     <Layout>
       {MeData?.me ? (
         <>
-          <NavBar />
           <Flex>
             <Box
               w="20%"
               bg="#0f1123"
               height="100vh"
               position="fixed"
-              pt="2.5rem"
+              pt="5rem"
               display={{ sm: "none", md: "block" }}
             >
               <Flex alignItems="flex-start" flexDirection="column" p="3rem">
@@ -107,6 +106,7 @@ const Home: React.FC<IndexProps> = () => {
                               flexDirection={{ sm: "column", md: "row" }}
                               justifyContent="center"
                               alignItems="center"
+                              pt="1rem"
                             >
                               <Box
                                 height="20rem"
@@ -120,6 +120,8 @@ const Home: React.FC<IndexProps> = () => {
                                   height="100%"
                                   objectFit="cover"
                                   position="relative"
+                                  borderRadius="1rem"
+                                  mt=".5rem"
                                 />
                               </Box>
                               <Box

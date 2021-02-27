@@ -170,7 +170,7 @@ export type MutationAddFavAnimeArgs = {
 
 
 export type MutationRemoveFavAnimeArgs = {
-  id: Scalars['Float'];
+  id: Scalars['Int'];
 };
 
 export type AnimePostInput = {
@@ -413,6 +413,16 @@ export type RegisterMutation = (
       & Pick<User, 'id' | 'username' | 'email'>
     )> }
   ) }
+);
+
+export type RemoveFavAnimeMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type RemoveFavAnimeMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'removeFavAnime'>
 );
 
 export type UpdateCommentMutationVariables = Exact<{
@@ -948,6 +958,36 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const RemoveFavAnimeDocument = gql`
+    mutation removeFavAnime($id: Int!) {
+  removeFavAnime(id: $id)
+}
+    `;
+export type RemoveFavAnimeMutationFn = Apollo.MutationFunction<RemoveFavAnimeMutation, RemoveFavAnimeMutationVariables>;
+
+/**
+ * __useRemoveFavAnimeMutation__
+ *
+ * To run a mutation, you first call `useRemoveFavAnimeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveFavAnimeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeFavAnimeMutation, { data, loading, error }] = useRemoveFavAnimeMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemoveFavAnimeMutation(baseOptions?: Apollo.MutationHookOptions<RemoveFavAnimeMutation, RemoveFavAnimeMutationVariables>) {
+        return Apollo.useMutation<RemoveFavAnimeMutation, RemoveFavAnimeMutationVariables>(RemoveFavAnimeDocument, baseOptions);
+      }
+export type RemoveFavAnimeMutationHookResult = ReturnType<typeof useRemoveFavAnimeMutation>;
+export type RemoveFavAnimeMutationResult = Apollo.MutationResult<RemoveFavAnimeMutation>;
+export type RemoveFavAnimeMutationOptions = Apollo.BaseMutationOptions<RemoveFavAnimeMutation, RemoveFavAnimeMutationVariables>;
 export const UpdateCommentDocument = gql`
     mutation updateComment($id: Int!, $comment: String!) {
   updateComment(id: $id, comment: $comment) {

@@ -1,0 +1,3 @@
+mutation removeFavAnime($id: Int!) {
+  removeFavAnime(id: $id)
+}
