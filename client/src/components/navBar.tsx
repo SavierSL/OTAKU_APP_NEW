@@ -5,6 +5,7 @@ import { useMeQuery, useLogoutMutation } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { useApolloClient } from "@apollo/client";
 import { useRouter } from "next/router";
+import { withApollo } from "../utils/withApollo";
 
 export interface NavBarProps {}
 
@@ -80,4 +81,4 @@ const NavBar: React.FC<NavBarProps> = () => {
   );
 };
 
-export default NavBar;
+export default withApollo({ ssr: true })(NavBar);

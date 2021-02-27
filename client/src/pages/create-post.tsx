@@ -21,6 +21,7 @@ import {
   useDeletePostMutation,
   useMeQuery,
 } from "../generated/graphql";
+import Layout from "../components/layout";
 
 export interface CreatePostProps {}
 export interface Anime {
@@ -59,111 +60,126 @@ const CreatePost: React.FC<CreatePostProps> = () => {
 
   return (
     <>
-      Create Anime Post
-      <NextLink href="home">
-        <Link>HOME</Link>
-      </NextLink>
-      <Formik
-        initialValues={{ title: "" }}
-        onSubmit={async (values) => {
-          const data = await getAnime(values.title);
-          setAnimes(data.slice(0, 5));
-          console.log(data);
-          return data;
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField
-              name="title"
-              placeholder="Search for anime title"
-              label="Search"
-            />
-            <SimpleGrid
-              columns={{ sm: 4, md: 5, lg: 1 }}
-              spacing="10px"
-              minChildWidth={{ sm: "500px", md: "250px", lg: "200px" }}
+      <Layout>
+        <Box height="100%" pb="5rem">
+          <Box pt="8rem" height="100vh">
+            <Formik
+              initialValues={{ title: "" }}
+              onSubmit={async (values) => {
+                const data = await getAnime(values.title);
+                setAnimes(data.slice(0, 4));
+                console.log(data);
+                return data;
+              }}
             >
-              {animes.length !== 0
-                ? animes.map((anime: Anime) => {
-                    return (
-                      <Box mt={2}>
-                        <Wrapper variant="regular">
-                          <Flex
-                            bg="aliceblue"
-                            borderRadius={10}
-                            alignItems="center"
-                            p={4}
-                            justifyContent="space-between"
-                          >
-                            <Text>{anime.title}</Text>
-                            <Box height="10rem" width="8rem" ml={3} pr={3}>
-                              <Image
-                                src={anime.image_url}
-                                height="100%"
-                                width="100%"
-                                objectFit="cover"
-                                position="relative"
-                              />
-                            </Box>
-                          </Flex>
-                          <Button
-                            bg="azure"
-                            onClick={() => {
-                              const animeScore = anime.score + "";
+              {({ isSubmitting }) => (
+                <Form>
+                  <Wrapper variant="regular">
+                    <Flex alignItems="center">
+                      <InputField
+                        name="title"
+                        placeholder="Search for anime title"
+                      />
+                      <Button type="submit" isLoading={isSubmitting}>
+                        search
+                      </Button>
+                    </Flex>
+                    <SimpleGrid
+                      columns={{ sm: 4, md: 5, lg: 1 }}
+                      spacing="10px"
+                      minChildWidth={{
+                        sm: "500px",
+                        md: "250px",
+                        lg: "200px",
+                      }}
+                    >
+                      {animes.length !== 0
+                        ? animes.map((anime: Anime) => {
+                            return (
+                              <Box mt={2}>
+                                <Wrapper variant="regular">
+                                  <Flex
+                                    bg="aliceblue"
+                                    borderRadius={10}
+                                    alignItems="center"
+                                    p={4}
+                                    justifyContent="space-between"
+                                  >
+                                    <Text>{anime.title}</Text>
+                                    <Box
+                                      height="10rem"
+                                      width="8rem"
+                                      ml={3}
+                                      pr={3}
+                                    >
+                                      <Image
+                                        src={anime.image_url}
+                                        height="100%"
+                                        width="100%"
+                                        objectFit="cover"
+                                        position="relative"
+                                      />
+                                    </Box>
+                                  </Flex>
+                                  <Button
+                                    mt=".5rem"
+                                    bg="azure"
+                                    onClick={() => {
+                                      const animeScore = anime.score + "";
 
-                              setAnimePost({
-                                title: anime.title,
-                                image_url: anime.image_url,
-                                rated: anime.rated,
-                                score: animeScore,
-                                synopsis: anime.synopsis,
-                              });
-                              setAnimes([]);
-                            }}
-                          >
-                            ADD ANIME
-                          </Button>
-                        </Wrapper>
-                      </Box>
-                    );
-                  })
-                : ""}
-            </SimpleGrid>
-            <Button type="submit" isLoading={isSubmitting}>
-              search
-            </Button>
-          </Form>
-        )}
-      </Formik>
-      {animePost ? (
-        <>
-          <Image
-            src={animePost.image_url}
-            height={200}
-            objectFit="cover"
-            position="relative"
-          />
+                                      setAnimePost({
+                                        title: anime.title,
+                                        image_url: anime.image_url,
+                                        rated: anime.rated,
+                                        score: animeScore,
+                                        synopsis: anime.synopsis,
+                                      });
+                                      setAnimes([]);
+                                    }}
+                                  >
+                                    ADD ANIME
+                                  </Button>
+                                </Wrapper>
+                              </Box>
+                            );
+                          })
+                        : ""}
+                    </SimpleGrid>
+                  </Wrapper>
+                </Form>
+              )}
+            </Formik>
+            {animePost ? (
+              <>
+                <Image
+                  src={animePost.image_url}
+                  height={200}
+                  objectFit="cover"
+                  position="relative"
+                />
 
-          <Box>
-            <Text fontWeight={500} fontSize={30}>
-              {animePost.title}
-            </Text>
-            <Text fontWeight={500} fontSize={20}>
-              {animePost.rated}
-            </Text>
-            <Text fontWeight={500} fontSize={20}>
-              {animePost.score}
-            </Text>
-            <Text fontWeight={500} fontSize={20}>
-              {animePost.synopsis}
-            </Text>
+                <Box>
+                  <Text fontWeight={500} fontSize={30}>
+                    {animePost.title}
+                  </Text>
+                  <Text fontWeight={500} fontSize={20}>
+                    {animePost.rated}
+                  </Text>
+                  <Text fontWeight={500} fontSize={20}>
+                    {animePost.score}
+                  </Text>
+                  <Text fontWeight={500} fontSize={20}>
+                    {animePost.synopsis}
+                  </Text>
+                </Box>
+                <AnimeContent animePost={animePost} />
+              </>
+            ) : (
+              ""
+            )}
           </Box>
-          <AnimeContent animePost={animePost} />
-        </>
-      ) : (
-        ""
-      )}
+        </Box>
+      </Layout>
     </>
   );
 };
