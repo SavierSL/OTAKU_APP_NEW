@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import {
   useAnimePostsQuery,
   useDeletePostMutation,
+  useGetFavAnimesQuery,
+  useGetProfileQuery,
   useMeQuery,
 } from "../generated/graphql";
 import { useIsAuth } from "../utils/isAuth";
@@ -18,8 +20,12 @@ import Layout from "../components/layout";
 export interface IndexProps {}
 
 const Home: React.FC<IndexProps> = () => {
+  const {
+    data: favAniemsData,
+    loading: favAnimeLoading,
+  } = useGetFavAnimesQuery();
+  const { data: ProfileData } = useGetProfileQuery();
   const router = useRouter();
-
   const { data: MeData, loading: MeLoading } = useMeQuery();
   const [deletePost, { loading: deleteLoading }] = useDeletePostMutation();
   const { data, loading, fetchMore, variables } = useAnimePostsQuery({
@@ -28,6 +34,23 @@ const Home: React.FC<IndexProps> = () => {
       cursor: "",
     },
   });
+  const [topAnimeLists, setTopAnimeLists] = useState([]);
+  const getTopAnimes = async () => {
+    const topAnimes = await fetch(
+      "https://jikan1.p.rapidapi.com/top/anime/1/upcoming",
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key":
+            "0a1e2916a5msh44da6893e3cecdbp108d8bjsne9ac3d4c9fd4",
+          "x-rapidapi-host": "jikan1.p.rapidapi.com",
+        },
+      }
+    );
+    const res = await topAnimes.json();
+    return res.top;
+  };
+
   useEffect(() => {
     //there is no data and not loading
     if (!MeData?.me && !MeLoading) {
@@ -36,8 +59,10 @@ const Home: React.FC<IndexProps> = () => {
       // this will become /login?next=/create-post. if logged in will go to create-post
       router.push("/");
     }
+    const animeLists = getTopAnimes().then((res) => setTopAnimeLists(res));
   }, []);
-  console.log(data);
+  console.log(topAnimeLists);
+
   return (
     <Layout>
       {MeData?.me ? (
@@ -53,6 +78,28 @@ const Home: React.FC<IndexProps> = () => {
             >
               <Flex alignItems="flex-start" flexDirection="column" p="3rem">
                 <Text color="white">{MeData.me.username}</Text>
+                <Box mt="1rem" mb="1rem">
+                  <Text fontWeight="700" color="#f2a154" mb=".5rem">
+                    Fav Animes
+                  </Text>
+                  <Flex flexDirection="column">
+                    {favAniemsData?.getFavAnimes.favAnimeList.length !== 0 ? (
+                      favAniemsData?.getFavAnimes.favAnimeList
+                        .slice(0, 5)
+                        .map((anime) => {
+                          return (
+                            <Box>
+                              <Text color="#f2a154" key={anime.id}>
+                                {anime.title}
+                              </Text>
+                            </Box>
+                          );
+                        })
+                    ) : (
+                      <Text color="#f2a154">none</Text>
+                    )}
+                  </Flex>
+                </Box>
                 <NextLink href="create-post">
                   <Link color="white">
                     <Button
@@ -73,14 +120,16 @@ const Home: React.FC<IndexProps> = () => {
                       bg="#1e212d"
                       _hover={{ bg: "teal.600" }}
                     >
-                      Create Profile
+                      {ProfileData?.getProfile
+                        ? "Update Profile"
+                        : "Create Profile"}
                     </Button>
                   </Link>
                 </NextLink>
               </Flex>
             </Box>
 
-            <Box m="auto" mt="5rem">
+            <Box m="auto">
               <Box
                 w={{ sm: "100%", md: "60%" }}
                 p={4}
@@ -113,6 +162,7 @@ const Home: React.FC<IndexProps> = () => {
                                 width="18rem"
                                 p="1rem"
                                 borderRadius="1rem"
+                                mb=".5rem"
                               >
                                 <Image
                                   src={anime.image_url}
@@ -121,7 +171,6 @@ const Home: React.FC<IndexProps> = () => {
                                   objectFit="cover"
                                   position="relative"
                                   borderRadius="1rem"
-                                  mt=".5rem"
                                 />
                               </Box>
                               <Box
@@ -155,7 +204,7 @@ const Home: React.FC<IndexProps> = () => {
                   <Box mr="auto" ml="auto" textAlign="center" p="1rem">
                     <Button
                       bg="none"
-                      color="green"
+                      color="#1687a7"
                       onClick={() =>
                         fetchMore({
                           variables: {
@@ -174,6 +223,59 @@ const Home: React.FC<IndexProps> = () => {
                 ) : (
                   ""
                 )}
+              </Box>
+            </Box>
+            <Box
+              w="20%"
+              bg="#0f1123"
+              height="100vh"
+              position="fixed"
+              right="0"
+              mt="6.5rem"
+              display={{ sm: "none", md: "block" }}
+              p="1rem"
+              overflow="scroll"
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#f2a154",
+                  borderRadius: "24px",
+                },
+              }}
+            >
+              <Box>
+                {" "}
+                <Text color="#da723c">Top animes</Text>
+                <Flex flexDirection="column">
+                  {topAnimeLists.length !== 0
+                    ? topAnimeLists.slice(0, 50).map((anime) => {
+                        return (
+                          <Box
+                            bg="#121013"
+                            mb=".5rem"
+                            p=".3rem"
+                            borderRadius=".2rem"
+                          >
+                            <Text
+                              fontWeight="600"
+                              fontSize="12px"
+                              color="#ffefa1"
+                            >
+                              {anime.title}
+                            </Text>
+                          </Box>
+                        );
+                      })
+                    : ""}
+                </Flex>
+                <Text fontWeight="600" fontSize="16px" color="#ffefa1">
+                  next
+                </Text>
               </Box>
             </Box>
           </Flex>

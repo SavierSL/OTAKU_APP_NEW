@@ -1,0 +1,18 @@
+mutation createProfile(
+  $bio: String!
+  $age: String!
+  $country: String!
+  $mostFavouriteCharacter: String!
+) {
+  createProfile(
+    bio: $bio
+    age: $age
+    country: $country
+    mostFavouriteCharacter: $mostFavouriteCharacter
+  ) {
+    bio
+    age
+    country
+    mostFavouriteCharacter
+  }
+}

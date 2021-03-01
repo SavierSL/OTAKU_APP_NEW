@@ -10,6 +10,10 @@ import {
   useGetFavAnimesQuery,
   GetFavAnimesDocument,
   useRemoveFavAnimeMutation,
+  useGetProfileQuery,
+  GetProfileDocument,
+  useUpdateProfileMutation,
+  useCreateProfileMutation,
 } from "../generated/graphql";
 import { withApollo } from "../utils/withApollo";
 import Layout from "../components/layout";
@@ -17,13 +21,16 @@ import Layout from "../components/layout";
 export interface CreateProfileProps {}
 
 const CreateProfile: React.FC<CreateProfileProps> = () => {
+  const { data: ProfileData } = useGetProfileQuery();
   const { data: MeData } = useMeQuery();
   const { data: favAniemsData, loading } = useGetFavAnimesQuery();
   const [removeFavAnime] = useRemoveFavAnimeMutation();
-
+  const [createProfile] = useCreateProfileMutation();
+  const [updateProfile] = useUpdateProfileMutation();
   const [addFavAnime, { data }] = useAddFavAnimeMutation();
   const [animes, setAnimes] = useState([]);
   console.log(favAniemsData?.getFavAnimes.favAnimeList);
+  console.log(ProfileData);
   return (
     <>
       <Layout>
@@ -150,12 +157,35 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
             <Box p="2rem" width="100%">
               <Formik
                 initialValues={{
-                  bio: "",
-                  age: "",
-                  country: "",
-                  mostFavouriteCharacter: "",
+                  bio: ProfileData ? ProfileData?.getProfile?.bio : "",
+                  age: ProfileData ? ProfileData?.getProfile?.age : "",
+                  country: ProfileData ? ProfileData?.getProfile?.country : "",
+                  mostFavouriteCharacter: ProfileData
+                    ? ProfileData?.getProfile?.mostFavouriteCharacter
+                    : "",
                 }}
-                onSubmit={() => console.log("long time ago now")}
+                onSubmit={({ bio, age, country, mostFavouriteCharacter }) => {
+                  ProfileData?.getProfile
+                    ? updateProfile({
+                        variables: {
+                          id: ProfileData.getProfile.id,
+                          bio,
+                          age,
+                          country,
+                          mostFavouriteCharacter,
+                        },
+                        refetchQueries: [{ query: GetProfileDocument }],
+                      })
+                    : createProfile({
+                        variables: {
+                          bio,
+                          age,
+                          country,
+                          mostFavouriteCharacter,
+                        },
+                        refetchQueries: [{ query: GetProfileDocument }],
+                      });
+                }}
               >
                 {({}) => (
                   <Form>
@@ -185,7 +215,9 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
                     />
 
                     <Button type="submit" width="100%" mt="2rem">
-                      Create Profile
+                      {ProfileData?.getProfile
+                        ? "Update Profile"
+                        : "Create Profile"}
                     </Button>
                   </Form>
                 )}
@@ -198,4 +230,4 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
   );
 };
 
-export default withApollo({ ssr: false })(CreateProfile);
+export default withApollo({ ssr: true })(CreateProfile);

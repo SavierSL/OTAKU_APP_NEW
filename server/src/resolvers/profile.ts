@@ -12,6 +12,9 @@ import {
   Resolver,
 } from "type-graphql";
 import { Anime } from "../Entities/FavAnime";
+import { text } from "express";
+import { AnimePost } from "src/Entities/AnimePost";
+import { getConnection } from "typeorm";
 // import { getConnection } from "typeorm";
 @InputType()
 class favAnimeInput {
@@ -76,11 +79,50 @@ export class PorfileResolver {
     };
   }
 
-  // @Mutation(() => Profile)
-  // async createProfile(
-  //   @Arg("bio") bio: string,
-  //   @Arg("age") age: number,
-  //   @Arg("country") country: string,
-  //   @Arg("mostFavouriteCharacter") mostFavouriteCharacter: string
-  // ) {}
+  @Mutation(() => Profile, { nullable: true })
+  async createProfile(
+    @Arg("bio") bio: string,
+    @Arg("age") age: string,
+    @Arg("country") country: string,
+    @Arg("mostFavouriteCharacter") mostFavouriteCharacter: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Profile | undefined> {
+    const findProf = await Profile.findOne({ userId: req.session.userId });
+    if (findProf) {
+      return;
+    }
+    const createProf = await Profile.create({
+      userId: req.session.userId,
+      bio,
+      age,
+      country,
+      mostFavouriteCharacter,
+    }).save();
+    return createProf;
+  }
+  @Mutation(() => Profile, { nullable: true })
+  async updateProfile(
+    @Arg("id", () => Int) id: number,
+    @Arg("bio") bio: string,
+    @Arg("age") age: string,
+    @Arg("country") country: string,
+    @Arg("mostFavouriteCharacter") mostFavouriteCharacter: string
+  ): Promise<Profile> {
+    const updateProfile = await getConnection()
+      .createQueryBuilder()
+      .update(Profile)
+      .set({ bio, age, country, mostFavouriteCharacter })
+      .where("id = :id", {
+        id: id,
+      })
+      .returning("*")
+      .execute();
+    return updateProfile.raw[0];
+  }
+
+  @Query(() => Profile, { nullable: true })
+  async getProfile(@Ctx() { req }: MyContext) {
+    const userProfile = Profile.findOne({ userId: req.session.userId });
+    return userProfile;
+  }
 }

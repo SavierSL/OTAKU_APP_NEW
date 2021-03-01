@@ -27,29 +27,37 @@ const NavBar: React.FC<NavBarProps> = () => {
   if (data?.me && !loading) {
     body = (
       <Flex alignItems="center" justifyContent="center" p="1rem" zIndex="1000">
-        <Box mr="2rem">
+        <Box>
           <NextLink href="/home">
-            <Link color="#f7f6e7">HOME</Link>
+            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+              HOME
+            </Link>
           </NextLink>
         </Box>
-        <Box mr="2rem">
+        <Box>
           <NextLink href="profile">
-            <Link color="#f7f6e7">PROFILE</Link>
+            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+              PROFILE
+            </Link>
           </NextLink>
         </Box>
-        <Box mr="2rem">
+        <Box>
           <NextLink href="/anime">
-            <Link color="#f7f6e7">ANIMES</Link>
+            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+              ANIMES
+            </Link>
           </NextLink>
         </Box>
-        <Box mr="2rem">
+        <Box>
           <Button
+            mr="-.5rem"
+            fontSize="12px"
             onClick={async () => {
               await logout();
               router.push("/");
               apolloClient.resetStore();
             }}
-            bg="#1e212d"
+            bg="#f2a154"
             color="white"
             _hover={{ bg: "teal.600" }}
           >
@@ -67,11 +75,10 @@ const NavBar: React.FC<NavBarProps> = () => {
         </Text>
       </Box>
       <Flex
-        justifyContent="space-between"
-        bg="blackAlpha.500"
+        justifyContent="flex-end"
         alignItems="center"
         position="fixed"
-        width="80%"
+        width="30%"
         right="0"
         zIndex="1000"
       >

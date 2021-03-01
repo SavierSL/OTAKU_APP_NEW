@@ -133,7 +133,7 @@ export class AnimePostResolver {
   @UseMiddleware(isAuth)
   async deletePost(@Arg("id", () => Int) id: number): Promise<Boolean> {
     try {
-      const deleteComments = await Comment.delete({ animePostId: id });
+      await Comment.delete({ animePostId: id });
       const postDeleted = await AnimePost.delete({
         id,
       });

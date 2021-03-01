@@ -26,9 +26,9 @@ export class Profile extends BaseEntity {
   @Column()
   bio!: string;
 
-  @Field(() => Int)
+  @Field()
   @Column()
-  age!: number;
+  age!: string;
 
   @Field()
   @Column()

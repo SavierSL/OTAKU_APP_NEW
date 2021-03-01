@@ -21,6 +21,7 @@ export type Query = {
   getAnimePostComment: PaginatedAnimeComments;
   me?: Maybe<User>;
   getFavAnimes: PaginatedFavAnimes;
+  getProfile?: Maybe<Profile>;
 };
 
 
@@ -103,6 +104,18 @@ export type Anime = {
   image_url: Scalars['String'];
 };
 
+export type Profile = {
+  __typename?: 'Profile';
+  id: Scalars['Int'];
+  bio: Scalars['String'];
+  age: Scalars['String'];
+  country: Scalars['String'];
+  mostFavouriteCharacter: Scalars['String'];
+  userId: Scalars['Float'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAnimePost: AnimePost;
@@ -116,6 +129,8 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   addFavAnime: Anime;
   removeFavAnime: Scalars['Boolean'];
+  createProfile?: Maybe<Profile>;
+  updateProfile?: Maybe<Profile>;
 };
 
 
@@ -170,6 +185,23 @@ export type MutationAddFavAnimeArgs = {
 
 
 export type MutationRemoveFavAnimeArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationCreateProfileArgs = {
+  mostFavouriteCharacter: Scalars['String'];
+  country: Scalars['String'];
+  age: Scalars['String'];
+  bio: Scalars['String'];
+};
+
+
+export type MutationUpdateProfileArgs = {
+  mostFavouriteCharacter: Scalars['String'];
+  country: Scalars['String'];
+  age: Scalars['String'];
+  bio: Scalars['String'];
   id: Scalars['Int'];
 };
 
@@ -300,6 +332,22 @@ export type CreateAnimePostMutation = (
   ) }
 );
 
+export type CreateProfileMutationVariables = Exact<{
+  bio: Scalars['String'];
+  age: Scalars['String'];
+  country: Scalars['String'];
+  mostFavouriteCharacter: Scalars['String'];
+}>;
+
+
+export type CreateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { createProfile?: Maybe<(
+    { __typename?: 'Profile' }
+    & Pick<Profile, 'bio' | 'age' | 'country' | 'mostFavouriteCharacter'>
+  )> }
+);
+
 export type DeleteCommentMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -353,6 +401,17 @@ export type GetFavAnimesQuery = (
       & Pick<Anime, 'title' | 'image_url' | 'id'>
     )> }
   ) }
+);
+
+export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProfileQuery = (
+  { __typename?: 'Query' }
+  & { getProfile?: Maybe<(
+    { __typename?: 'Profile' }
+    & Pick<Profile, 'id' | 'bio' | 'country' | 'mostFavouriteCharacter' | 'age'>
+  )> }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -452,6 +511,23 @@ export type UpdatePostMutation = (
     { __typename?: 'AnimePost' }
     & Pick<AnimePost, 'title' | 'creatorId' | 'rated' | 'text' | 'image_url' | 'id' | 'synopsis' | 'createdAt'>
   ) }
+);
+
+export type UpdateProfileMutationVariables = Exact<{
+  id: Scalars['Int'];
+  bio: Scalars['String'];
+  age: Scalars['String'];
+  country: Scalars['String'];
+  mostFavouriteCharacter: Scalars['String'];
+}>;
+
+
+export type UpdateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProfile?: Maybe<(
+    { __typename?: 'Profile' }
+    & Pick<Profile, 'bio' | 'age' | 'country' | 'mostFavouriteCharacter'>
+  )> }
 );
 
 
@@ -675,6 +751,49 @@ export function useCreateAnimePostMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateAnimePostMutationHookResult = ReturnType<typeof useCreateAnimePostMutation>;
 export type CreateAnimePostMutationResult = Apollo.MutationResult<CreateAnimePostMutation>;
 export type CreateAnimePostMutationOptions = Apollo.BaseMutationOptions<CreateAnimePostMutation, CreateAnimePostMutationVariables>;
+export const CreateProfileDocument = gql`
+    mutation createProfile($bio: String!, $age: String!, $country: String!, $mostFavouriteCharacter: String!) {
+  createProfile(
+    bio: $bio
+    age: $age
+    country: $country
+    mostFavouriteCharacter: $mostFavouriteCharacter
+  ) {
+    bio
+    age
+    country
+    mostFavouriteCharacter
+  }
+}
+    `;
+export type CreateProfileMutationFn = Apollo.MutationFunction<CreateProfileMutation, CreateProfileMutationVariables>;
+
+/**
+ * __useCreateProfileMutation__
+ *
+ * To run a mutation, you first call `useCreateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProfileMutation, { data, loading, error }] = useCreateProfileMutation({
+ *   variables: {
+ *      bio: // value for 'bio'
+ *      age: // value for 'age'
+ *      country: // value for 'country'
+ *      mostFavouriteCharacter: // value for 'mostFavouriteCharacter'
+ *   },
+ * });
+ */
+export function useCreateProfileMutation(baseOptions?: Apollo.MutationHookOptions<CreateProfileMutation, CreateProfileMutationVariables>) {
+        return Apollo.useMutation<CreateProfileMutation, CreateProfileMutationVariables>(CreateProfileDocument, baseOptions);
+      }
+export type CreateProfileMutationHookResult = ReturnType<typeof useCreateProfileMutation>;
+export type CreateProfileMutationResult = Apollo.MutationResult<CreateProfileMutation>;
+export type CreateProfileMutationOptions = Apollo.BaseMutationOptions<CreateProfileMutation, CreateProfileMutationVariables>;
 export const DeleteCommentDocument = gql`
     mutation deleteComment($id: Int!) {
   deleteComment(id: $id)
@@ -812,6 +931,42 @@ export function useGetFavAnimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetFavAnimesQueryHookResult = ReturnType<typeof useGetFavAnimesQuery>;
 export type GetFavAnimesLazyQueryHookResult = ReturnType<typeof useGetFavAnimesLazyQuery>;
 export type GetFavAnimesQueryResult = Apollo.QueryResult<GetFavAnimesQuery, GetFavAnimesQueryVariables>;
+export const GetProfileDocument = gql`
+    query getProfile {
+  getProfile {
+    id
+    bio
+    country
+    mostFavouriteCharacter
+    age
+  }
+}
+    `;
+
+/**
+ * __useGetProfileQuery__
+ *
+ * To run a query within a React component, call `useGetProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProfileQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProfileQuery(baseOptions?: Apollo.QueryHookOptions<GetProfileQuery, GetProfileQueryVariables>) {
+        return Apollo.useQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, baseOptions);
+      }
+export function useGetProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfileQuery, GetProfileQueryVariables>) {
+          return Apollo.useLazyQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, baseOptions);
+        }
+export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
+export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
+export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -1066,3 +1221,48 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const UpdateProfileDocument = gql`
+    mutation updateProfile($id: Int!, $bio: String!, $age: String!, $country: String!, $mostFavouriteCharacter: String!) {
+  updateProfile(
+    id: $id
+    bio: $bio
+    age: $age
+    country: $country
+    mostFavouriteCharacter: $mostFavouriteCharacter
+  ) {
+    bio
+    age
+    country
+    mostFavouriteCharacter
+  }
+}
+    `;
+export type UpdateProfileMutationFn = Apollo.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      bio: // value for 'bio'
+ *      age: // value for 'age'
+ *      country: // value for 'country'
+ *      mostFavouriteCharacter: // value for 'mostFavouriteCharacter'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        return Apollo.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, baseOptions);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;

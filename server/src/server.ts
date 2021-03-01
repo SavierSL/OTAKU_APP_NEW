@@ -39,7 +39,7 @@ const main = async () => {
     entities: [AnimePost, User, Profile, Comment, Anime],
   });
   // await Anime.delete({});
-  // await User.delete({});
+  // // await User.delete({});
   // await Profile.delete({});
   // await Comment.delete({});
   // await AnimePost.delete({});/

@@ -20,6 +20,17 @@ const theme = extendTheme({
         fontSize: "18px",
         fontWeight: "400",
         lineHeight: "1.8",
+        "&::-webkit-scrollbar": {
+          width: ".5rem",
+        },
+        "&::-webkit-scrollbar-track": {
+          width: "6px",
+          background: "#16161D",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "#03506f",
+          borderRadius: "24px",
+        },
       },
     },
   },

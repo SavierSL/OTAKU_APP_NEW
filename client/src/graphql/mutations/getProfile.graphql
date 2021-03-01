@@ -1,0 +1,9 @@
+query getProfile {
+  getProfile {
+    id
+    bio
+    country
+    mostFavouriteCharacter
+    age
+  }
+}
