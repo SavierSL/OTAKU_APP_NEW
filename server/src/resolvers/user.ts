@@ -48,7 +48,18 @@ class ResponseField {
 export class UserResolver {
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req }: MyContext): Promise<User | null> {
-    const user = await User.findOne({ id: req.session.userId });
+    // await getRepository(User)
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect("user.animePost", "animePost")
+    //   .leftJoinAndSelect("animePost.creator", "")
+    //   .getMany();
+    const user = await User.findOne(
+      { id: req.session.userId },
+      {
+        relations: ["animePost", "animePost.creator"],
+        // order: { createdAt: "ASC" },
+      }
+    );
     if (!user) {
       return null;
     }

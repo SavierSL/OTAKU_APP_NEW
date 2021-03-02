@@ -1,4 +1,14 @@
-import { Flex, Image, Text, Link, Box, Button, chakra } from "@chakra-ui/react";
+import {
+  Flex,
+  Image,
+  Text,
+  Link,
+  Box,
+  Button,
+  chakra,
+  useDisclosure,
+  Collapse,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
 import {
@@ -17,11 +27,13 @@ import Comments from "../components/comments";
 import EditAndDeletePost from "../components/EditAndDeletePost";
 import Layout from "../components/layout";
 import { motion } from "framer-motion";
+import AnimePostContainer from "../components/animeContainerPost";
 
 export interface IndexProps {}
 const MotionBox = chakra(motion.div);
 
 const Home: React.FC<IndexProps> = () => {
+  const { isOpen, onToggle } = useDisclosure();
   const {
     data: favAniemsData,
     loading: favAnimeLoading,
@@ -94,6 +106,49 @@ const Home: React.FC<IndexProps> = () => {
       <Layout>
         {MeData?.me ? (
           <>
+            <Box
+              display={{ sm: "block", md: "none" }}
+              position="fixed"
+              zIndex="1001"
+              left="0"
+              mt="5rem"
+              width="100%"
+              p="1rem"
+            >
+              <Button onClick={onToggle}>-</Button>
+              <Collapse in={isOpen} animateOpacity>
+                <Box
+                  p="40px"
+                  color="white"
+                  mt="4"
+                  width="100%"
+                  height="100%"
+                  bg="#1e212d"
+                  rounded="md"
+                  shadow="md"
+                >
+                  <Flex flexDirection="column">
+                    <NextLink href="create-post">
+                      <Link color="white">
+                        <Button bg="#1e212d" _hover={{ bg: "teal.600" }}>
+                          Create Post
+                        </Button>
+                      </Link>
+                    </NextLink>
+
+                    <NextLink href="create-profile">
+                      <Link color="white">
+                        <Button bg="#1e212d" _hover={{ bg: "teal.600" }}>
+                          {ProfileData?.getProfile
+                            ? "Update Profile"
+                            : "Create Profile"}
+                        </Button>
+                      </Link>
+                    </NextLink>
+                  </Flex>
+                </Box>
+              </Collapse>
+            </Box>
             <Flex>
               <MotionBox
                 variants={homeIntro}
@@ -159,7 +214,7 @@ const Home: React.FC<IndexProps> = () => {
                 </Flex>
               </MotionBox>
 
-              <Box m="auto">
+              <Box m="auto" pt={{ sm: "5rem", md: "0" }}>
                 <Box
                   w={{ sm: "100%", md: "60%" }}
                   p={4}
@@ -172,60 +227,7 @@ const Home: React.FC<IndexProps> = () => {
                     data!.animePosts.animes.map((anime) => {
                       return !anime && !MeData?.me ? null : (
                         <>
-                          <Box bg="blackAlpha.300" p=".5rem" mt="1rem">
-                            <Box
-                              key={anime.id}
-                              bg="#0f1123"
-                              m="1rem"
-                              borderRadius="1rem"
-                              shadow="base"
-                            >
-                              <Flex
-                                mt={2}
-                                flexDirection={{ sm: "column", md: "row" }}
-                                justifyContent="center"
-                                alignItems="center"
-                                pt="1rem"
-                              >
-                                <Box
-                                  height="20rem"
-                                  width="18rem"
-                                  p="1rem"
-                                  borderRadius="1rem"
-                                  mb=".5rem"
-                                >
-                                  <Image
-                                    src={anime.image_url}
-                                    width="100%"
-                                    height="100%"
-                                    objectFit="cover"
-                                    position="relative"
-                                    borderRadius="1rem"
-                                  />
-                                </Box>
-                                <Box
-                                  p="2rem"
-                                  position="relative"
-                                  height="100%"
-                                  width="90%"
-                                >
-                                  <Text height="100%" color="#fff">
-                                    {anime.text}
-                                  </Text>
-                                  <Text fontSize="1.5rem" color="#fff">
-                                    Posted by {anime.creator.username}
-                                  </Text>
-                                  <Text color="#fff">{anime.title}</Text>
-                                  <Text color="#f7f7e8" fontSize="1.1rem">
-                                    {anime.synopsis}
-                                  </Text>
-
-                                  <EditAndDeletePost anime={anime} />
-                                </Box>
-                              </Flex>
-                            </Box>
-                            <Comments animePostId={anime.id} />
-                          </Box>
+                          <AnimePostContainer anime={anime} />
                         </>
                       );
                     })
@@ -279,7 +281,6 @@ const Home: React.FC<IndexProps> = () => {
                 }}
               >
                 <Box>
-                  {" "}
                   <Text color="#da723c">Top animes</Text>
                   <Flex flexDirection="column">
                     {topAnimeLists.length !== 0

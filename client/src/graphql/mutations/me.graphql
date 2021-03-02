@@ -3,5 +3,22 @@ query me {
     id
     username
     email
+    animePost {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
   }
 }

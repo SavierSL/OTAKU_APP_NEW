@@ -22,6 +22,7 @@ export type Query = {
   me?: Maybe<User>;
   getFavAnimes: PaginatedFavAnimes;
   getProfile?: Maybe<Profile>;
+  getProfilePost: Array<AnimePost>;
 };
 
 
@@ -61,6 +62,7 @@ export type User = {
   id: Scalars['Int'];
   username: Scalars['String'];
   email?: Maybe<Scalars['String']>;
+  animePost: Array<AnimePost>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -450,6 +452,14 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email'>
+    & { animePost: Array<(
+      { __typename?: 'AnimePost' }
+      & Pick<AnimePost, 'title' | 'creatorId' | 'rated' | 'text' | 'image_url' | 'id' | 'synopsis' | 'createdAt'>
+      & { creator: (
+        { __typename?: 'User' }
+        & Pick<User, 'username' | 'id' | 'email' | 'createdAt'>
+      ) }
+    )> }
   )> }
 );
 
@@ -1043,6 +1053,23 @@ export const MeDocument = gql`
     id
     username
     email
+    animePost {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
   }
 }
     `;

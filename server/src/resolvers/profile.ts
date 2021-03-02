@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 import { Anime } from "../Entities/FavAnime";
 import { text } from "express";
-import { AnimePost } from "src/Entities/AnimePost";
+import { AnimePost } from "../Entities/AnimePost";
 import { getConnection } from "typeorm";
 // import { getConnection } from "typeorm";
 @InputType()
@@ -122,7 +122,12 @@ export class PorfileResolver {
 
   @Query(() => Profile, { nullable: true })
   async getProfile(@Ctx() { req }: MyContext) {
-    const userProfile = Profile.findOne({ userId: req.session.userId });
+    const userProfile = await Profile.findOne({ userId: req.session.userId });
     return userProfile;
+  }
+  @Query(() => [AnimePost])
+  async getProfilePost(@Ctx() { req }: MyContext): Promise<AnimePost[]> {
+    const userPosts = await AnimePost.find({ creatorId: req.session.userId });
+    return userPosts;
   }
 }

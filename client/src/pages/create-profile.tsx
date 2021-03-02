@@ -24,7 +24,7 @@ const MotionBox = chakra(motion.div);
 
 const profileIntro = {
   initial: {
-    x: 100,
+    x: -100,
   },
   animate: {
     x: 0,
@@ -67,7 +67,11 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
             p="5rem"
             flexDirection={{ sm: "column", md: "row" }}
           >
-            <Box p="2rem" width={{ sm: "100%", md: "50%" }} height="100%">
+            <Box
+              p={{ sm: "0", md: "2rem" }}
+              width={{ sm: "100%", md: "100%" }}
+              height="100%"
+            >
               <Text color="white">Fave Animes</Text>
               {!favAniemsData && loading
                 ? " "
@@ -81,6 +85,7 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
                         mt="1rem"
                         justifyContent="space-between"
                         alignItems="center"
+                        width="100%"
                       >
                         <Text color="white">{anime.title}</Text>
                         <Text
@@ -180,7 +185,7 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
                 : ""}
             </Box>
 
-            <Box p="2rem" width="100%">
+            <Box width="100%" mt="2.5rem">
               <Formik
                 initialValues={{
                   bio: ProfileData ? ProfileData?.getProfile?.bio : "",
@@ -221,6 +226,7 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
                           staggerChildren: 1,
                         },
                       }}
+                      width="100%"
                     >
                       <MotionBox
                         variants={profileIntro}

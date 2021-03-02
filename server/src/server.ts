@@ -70,7 +70,7 @@ const main = async () => {
         secure: !__prod__, //cookie only works in https
         sameSite: "lax", //csrf
       },
-      saveUninitialized: false, //it will create a session by default turn it to false so we can add
+      saveUninitialized: true, //it will create a session by default turn it to false so we can add
       secret: "asfasfasfasfasfacWTGSD",
       resave: false,
     })

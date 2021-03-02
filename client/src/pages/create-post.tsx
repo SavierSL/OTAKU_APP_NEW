@@ -66,7 +66,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
       animate={{ opacity: 1 }}
     >
       <Layout>
-        <Box height="100%" pb="5rem">
+        <Box height="100%" width="100%" pb="5rem">
           <Box pt="8rem" height="100vh">
             <Formik
               initialValues={{ title: "" }}
@@ -90,61 +90,60 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                       </Button>
                     </Flex>
                     <SimpleGrid
-                      columns={{ sm: 4, md: 5, lg: 1 }}
+                      columns={{ sm: 4, md: 4, lg: 4 }}
                       spacing="10px"
                       minChildWidth={{
-                        sm: "500px",
-                        md: "250px",
-                        lg: "200px",
+                        sm: "50%",
+                        md: "50%",
+                        lg: "50%",
                       }}
                     >
                       {animes.length !== 0
                         ? animes.map((anime: Anime) => {
                             return (
                               <Box mt={2}>
-                                <Wrapper variant="regular">
-                                  <Flex
-                                    bg="aliceblue"
-                                    borderRadius={10}
-                                    alignItems="center"
-                                    p={4}
-                                    justifyContent="space-between"
+                                <Flex
+                                  bg="aliceblue"
+                                  borderRadius={10}
+                                  alignItems="center"
+                                  p={4}
+                                  justifyContent="space-between"
+                                  width="100%"
+                                >
+                                  <Text>{anime.title}</Text>
+                                  <Box
+                                    height="10rem"
+                                    width="8rem"
+                                    ml={3}
+                                    pr={3}
                                   >
-                                    <Text>{anime.title}</Text>
-                                    <Box
-                                      height="10rem"
-                                      width="8rem"
-                                      ml={3}
-                                      pr={3}
-                                    >
-                                      <Image
-                                        src={anime.image_url}
-                                        height="100%"
-                                        width="100%"
-                                        objectFit="cover"
-                                        position="relative"
-                                      />
-                                    </Box>
-                                  </Flex>
-                                  <Button
-                                    mt=".5rem"
-                                    bg="azure"
-                                    onClick={() => {
-                                      const animeScore = anime.score + "";
+                                    <Image
+                                      src={anime.image_url}
+                                      height="100%"
+                                      width="100%"
+                                      objectFit="cover"
+                                      position="relative"
+                                    />
+                                  </Box>
+                                </Flex>
+                                <Button
+                                  mt=".5rem"
+                                  bg="azure"
+                                  onClick={() => {
+                                    const animeScore = anime.score + "";
 
-                                      setAnimePost({
-                                        title: anime.title,
-                                        image_url: anime.image_url,
-                                        rated: anime.rated,
-                                        score: animeScore,
-                                        synopsis: anime.synopsis,
-                                      });
-                                      setAnimes([]);
-                                    }}
-                                  >
-                                    ADD ANIME
-                                  </Button>
-                                </Wrapper>
+                                    setAnimePost({
+                                      title: anime.title,
+                                      image_url: anime.image_url,
+                                      rated: anime.rated,
+                                      score: animeScore,
+                                      synopsis: anime.synopsis,
+                                    });
+                                    setAnimes([]);
+                                  }}
+                                >
+                                  ADD ANIME
+                                </Button>
                               </Box>
                             );
                           })

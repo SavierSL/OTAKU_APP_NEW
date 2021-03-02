@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
             useSystemColorMode: true,
           }}
         >
-          <Box bg="#1e212d" height="100%" pb="3rem">
+          <Box bg="#1e212d" height="100%" width="100%" pb="3rem">
             <Component {...pageProps} />
           </Box>
         </ColorModeProvider>

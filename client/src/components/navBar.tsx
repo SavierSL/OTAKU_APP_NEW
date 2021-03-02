@@ -29,21 +29,33 @@ const NavBar: React.FC<NavBarProps> = () => {
       <Flex alignItems="center" justifyContent="center" p="1rem" zIndex="1000">
         <Box>
           <NextLink href="/home">
-            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+            <Link
+              mr="1rem"
+              fontSize={{ sm: "10px", md: "12px" }}
+              color="#f7f6e7"
+            >
               HOME
             </Link>
           </NextLink>
         </Box>
         <Box>
           <NextLink href="profile">
-            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+            <Link
+              mr="1rem"
+              fontSize={{ sm: "10px", md: "12px" }}
+              color="#f7f6e7"
+            >
               PROFILE
             </Link>
           </NextLink>
         </Box>
         <Box>
           <NextLink href="/anime">
-            <Link mr="1rem" fontSize="12px" color="#f7f6e7">
+            <Link
+              mr="1rem"
+              fontSize={{ sm: "10px", md: "12px" }}
+              color="#f7f6e7"
+            >
               ANIMES
             </Link>
           </NextLink>
@@ -51,7 +63,7 @@ const NavBar: React.FC<NavBarProps> = () => {
         <Box>
           <Button
             mr="-.5rem"
-            fontSize="12px"
+            fontSize={{ sm: "10px", md: "12px" }}
             onClick={async () => {
               await logout();
               router.push("/");

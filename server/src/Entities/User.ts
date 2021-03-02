@@ -42,6 +42,7 @@ export class User extends BaseEntity {
   comments: Comment[];
 
   //POSTS
+  @Field(() => [AnimePost])
   @OneToMany(() => AnimePost, (animePost) => animePost.creator)
   animePost: AnimePost[];
 
