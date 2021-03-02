@@ -1,4 +1,4 @@
-import { Box, Button, Text, Link, Flex, Image } from "@chakra-ui/react";
+import { Box, Button, Text, Link, Flex, Image, chakra } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import React, { useState } from "react";
 import InputField from "../components/inputField";
@@ -17,8 +17,30 @@ import {
 } from "../generated/graphql";
 import { withApollo } from "../utils/withApollo";
 import Layout from "../components/layout";
+import { motion } from "framer-motion";
 
 export interface CreateProfileProps {}
+const MotionBox = chakra(motion.div);
+
+const profileIntro = {
+  initial: {
+    x: 100,
+  },
+  animate: {
+    x: 0,
+    transition: {
+      ease: [0.6, -0.05, 0.01, 0.99],
+    },
+  },
+};
+
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 1,
+    },
+  },
+};
 
 const CreateProfile: React.FC<CreateProfileProps> = () => {
   const { data: ProfileData } = useGetProfileQuery();
@@ -32,7 +54,11 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
   console.log(favAniemsData?.getFavAnimes.favAnimeList);
   console.log(ProfileData);
   return (
-    <>
+    <motion.div
+      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <Layout>
         <Box height="100%">
           <Flex
@@ -189,36 +215,73 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
               >
                 {({}) => (
                   <Form>
-                    <InputField
-                      name="bio"
-                      label="Bio"
-                      type="text"
-                      placeholder="Bio"
-                    />
-                    <InputField
-                      name="age"
-                      label="Age"
-                      type="text"
-                      placeholder="Age"
-                    />
-                    <InputField
-                      name="country"
-                      label="Country"
-                      type="text"
-                      placeholder="Country"
-                    />
-                    <InputField
-                      name="mostFavouriteCharacter"
-                      label="Most fav anime character"
-                      type="text"
-                      placeholder="Most fav anime character"
-                    />
-
-                    <Button type="submit" width="100%" mt="2rem">
-                      {ProfileData?.getProfile
-                        ? "Update Profile"
-                        : "Create Profile"}
-                    </Button>
+                    <MotionBox
+                      animate={{
+                        transition: {
+                          staggerChildren: 1,
+                        },
+                      }}
+                    >
+                      <MotionBox
+                        variants={profileIntro}
+                        animate="animate"
+                        initial="initial"
+                      >
+                        <InputField
+                          name="bio"
+                          label="Bio"
+                          type="text"
+                          placeholder="Bio"
+                        />
+                      </MotionBox>
+                      <MotionBox
+                        variants={profileIntro}
+                        animate="animate"
+                        initial="initial"
+                      >
+                        <InputField
+                          name="age"
+                          label="Age"
+                          type="text"
+                          placeholder="Age"
+                        />
+                      </MotionBox>
+                      <MotionBox
+                        variants={profileIntro}
+                        animate="animate"
+                        initial="initial"
+                      >
+                        <InputField
+                          name="country"
+                          label="Country"
+                          type="text"
+                          placeholder="Country"
+                        />
+                      </MotionBox>
+                      <MotionBox
+                        variants={profileIntro}
+                        animate="animate"
+                        initial="initial"
+                      >
+                        <InputField
+                          name="mostFavouriteCharacter"
+                          label="Most fav anime character"
+                          type="text"
+                          placeholder="Most fav anime character"
+                        />
+                      </MotionBox>
+                      <MotionBox
+                        variants={profileIntro}
+                        animate="animate"
+                        initial="initial"
+                      >
+                        <Button type="submit" width="100%" mt="2rem">
+                          {ProfileData?.getProfile
+                            ? "Update Profile"
+                            : "Create Profile"}
+                        </Button>
+                      </MotionBox>
+                    </MotionBox>
                   </Form>
                 )}
               </Formik>
@@ -226,7 +289,7 @@ const CreateProfile: React.FC<CreateProfileProps> = () => {
           </Flex>
         </Box>
       </Layout>
-    </>
+    </motion.div>
   );
 };
 

@@ -18,7 +18,7 @@
     "apollo-cache-persist": "^0.1.1",
     "apollo3-cache-persist": "^0.9.1",
     "formik": "^2.2.6",
-    "framer-motion": "^2.9.4",
+    "framer-motion": "^2.9.5",
     "graphql": "^15.5.0",
     "isomorphic-unfetch": "^3.1.0",
     "next": "latest",

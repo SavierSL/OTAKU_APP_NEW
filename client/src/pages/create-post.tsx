@@ -22,6 +22,7 @@ import {
   useMeQuery,
 } from "../generated/graphql";
 import Layout from "../components/layout";
+import { motion } from "framer-motion";
 
 export interface CreatePostProps {}
 export interface Anime {
@@ -59,7 +60,11 @@ const CreatePost: React.FC<CreatePostProps> = () => {
   }
 
   return (
-    <>
+    <motion.div
+      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <Layout>
         <Box height="100%" pb="5rem">
           <Box pt="8rem" height="100vh">
@@ -180,7 +185,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
           </Box>
         </Box>
       </Layout>
-    </>
+    </motion.div>
   );
 };
 

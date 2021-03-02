@@ -11,7 +11,19 @@ import {
   GetAnimePostCommentDocument,
   GetAnimePostCommentQuery,
 } from "../generated/graphql";
-import { Flex, Image, Text, Link, Box, Button } from "@chakra-ui/react";
+import {
+  Flex,
+  Image,
+  Text,
+  Link,
+  Box,
+  Button,
+  useDisclosure,
+  Fade,
+  SlideFade,
+  Collapse,
+  chakra,
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { withApollo } from "../utils/withApollo";
 import { Comment } from "../generated/graphql";
@@ -20,12 +32,15 @@ import InputField from "../components/inputField";
 import CommentContainer from "../components/commentContainer";
 import { ApolloCache, gql } from "@apollo/client";
 import { useApolloClient } from "@apollo/client";
+import { motion } from "framer-motion";
+const MotionBox = chakra(motion.div);
 
 export interface CommentsProps {
   animePostId: number;
 }
 
 const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
+  const { isOpen, onToggle } = useDisclosure();
   const apolloClient = useApolloClient();
   const [commetPost] = useCommentPostMutation();
   const { data, loading, fetchMore } = useGetAnimePostCommentQuery({
@@ -42,6 +57,19 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
     return <div>You have no post </div>;
   }
   console.log(data);
+  const openComments = {
+    initial: {
+      y: 100,
+      opacity: 0,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        ease: [0.6, -0.05, 0.01, 0.99],
+      },
+    },
+  };
   return (
     <>
       {!data && loading ? (
@@ -51,7 +79,9 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
           <Box width="100%" pl="4rem" pr="4rem">
             <Box w="7rem">
               <Text
-                onClick={() => setOpentComment(!openComment)}
+                onClick={() => {
+                  setOpentComment(!openComment);
+                }}
                 cursor="pointer"
                 color="#fff"
               >
@@ -60,7 +90,12 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
             </Box>
 
             {openComment ? (
-              <Box height="80%">
+              <MotionBox
+                variants={openComments}
+                animate="animate"
+                initial="initial"
+                height="80%"
+              >
                 {data!.getAnimePostComment?.allComments.map(
                   (comment: Comment) => {
                     return (
@@ -74,7 +109,7 @@ const Comments: React.FC<CommentsProps> = ({ animePostId }) => {
                     );
                   }
                 )}
-              </Box>
+              </MotionBox>
             ) : (
               ""
             )}
