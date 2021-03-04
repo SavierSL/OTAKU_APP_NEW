@@ -26,6 +26,7 @@ const AnimeContent: React.FC<AnimeContentProps> = ({ animePost }) => {
           update: (cache) => {
             console.log(cache);
             cache.evict({ fieldName: "animePosts" });
+            cache.evict({ fieldName: "getProfilePosts" });
           },
         });
       }}

@@ -22,7 +22,8 @@ export type Query = {
   me?: Maybe<User>;
   getFavAnimes: PaginatedFavAnimes;
   getProfile?: Maybe<Profile>;
-  getProfilePost: Array<AnimePost>;
+  getProfilev?: Maybe<Profile>;
+  getProfilePosts: PaginatedAnimePosts;
 };
 
 
@@ -39,6 +40,17 @@ export type QueryAnimePostsArgs = {
 
 export type QueryGetAnimePostCommentArgs = {
   animePostId: Scalars['Int'];
+};
+
+
+export type QueryGetProfilevArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetProfilePostsArgs = {
+  cursor: Scalars['String'];
+  limit: Scalars['Int'];
 };
 
 export type AnimePost = {
@@ -416,6 +428,41 @@ export type GetProfileQuery = (
   )> }
 );
 
+export type GetProfilePostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor: Scalars['String'];
+}>;
+
+
+export type GetProfilePostsQuery = (
+  { __typename?: 'Query' }
+  & { getProfilePosts: (
+    { __typename?: 'PaginatedAnimePosts' }
+    & Pick<PaginatedAnimePosts, 'hasMore'>
+    & { animes: Array<(
+      { __typename?: 'AnimePost' }
+      & Pick<AnimePost, 'title' | 'creatorId' | 'rated' | 'text' | 'image_url' | 'id' | 'synopsis' | 'createdAt'>
+      & { creator: (
+        { __typename?: 'User' }
+        & Pick<User, 'username' | 'id' | 'email' | 'createdAt'>
+      ) }
+    )> }
+  ) }
+);
+
+export type GetProfilevQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetProfilevQuery = (
+  { __typename?: 'Query' }
+  & { getProfilev?: Maybe<(
+    { __typename?: 'Profile' }
+    & Pick<Profile, 'id' | 'bio' | 'country' | 'mostFavouriteCharacter' | 'age'>
+  )> }
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -452,14 +499,6 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email'>
-    & { animePost: Array<(
-      { __typename?: 'AnimePost' }
-      & Pick<AnimePost, 'title' | 'creatorId' | 'rated' | 'text' | 'image_url' | 'id' | 'synopsis' | 'createdAt'>
-      & { creator: (
-        { __typename?: 'User' }
-        & Pick<User, 'username' | 'id' | 'email' | 'createdAt'>
-      ) }
-    )> }
   )> }
 );
 
@@ -977,6 +1016,94 @@ export function useGetProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
 export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
 export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
+export const GetProfilePostsDocument = gql`
+    query getProfilePosts($limit: Int!, $cursor: String!) {
+  getProfilePosts(limit: $limit, cursor: $cursor) {
+    hasMore
+    animes {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProfilePostsQuery__
+ *
+ * To run a query within a React component, call `useGetProfilePostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfilePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProfilePostsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useGetProfilePostsQuery(baseOptions: Apollo.QueryHookOptions<GetProfilePostsQuery, GetProfilePostsQueryVariables>) {
+        return Apollo.useQuery<GetProfilePostsQuery, GetProfilePostsQueryVariables>(GetProfilePostsDocument, baseOptions);
+      }
+export function useGetProfilePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfilePostsQuery, GetProfilePostsQueryVariables>) {
+          return Apollo.useLazyQuery<GetProfilePostsQuery, GetProfilePostsQueryVariables>(GetProfilePostsDocument, baseOptions);
+        }
+export type GetProfilePostsQueryHookResult = ReturnType<typeof useGetProfilePostsQuery>;
+export type GetProfilePostsLazyQueryHookResult = ReturnType<typeof useGetProfilePostsLazyQuery>;
+export type GetProfilePostsQueryResult = Apollo.QueryResult<GetProfilePostsQuery, GetProfilePostsQueryVariables>;
+export const GetProfilevDocument = gql`
+    query getProfilev($id: Int!) {
+  getProfilev(id: $id) {
+    id
+    bio
+    country
+    mostFavouriteCharacter
+    age
+  }
+}
+    `;
+
+/**
+ * __useGetProfilevQuery__
+ *
+ * To run a query within a React component, call `useGetProfilevQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfilevQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProfilevQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetProfilevQuery(baseOptions: Apollo.QueryHookOptions<GetProfilevQuery, GetProfilevQueryVariables>) {
+        return Apollo.useQuery<GetProfilevQuery, GetProfilevQueryVariables>(GetProfilevDocument, baseOptions);
+      }
+export function useGetProfilevLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfilevQuery, GetProfilevQueryVariables>) {
+          return Apollo.useLazyQuery<GetProfilevQuery, GetProfilevQueryVariables>(GetProfilevDocument, baseOptions);
+        }
+export type GetProfilevQueryHookResult = ReturnType<typeof useGetProfilevQuery>;
+export type GetProfilevLazyQueryHookResult = ReturnType<typeof useGetProfilevLazyQuery>;
+export type GetProfilevQueryResult = Apollo.QueryResult<GetProfilevQuery, GetProfilevQueryVariables>;
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -1053,23 +1180,6 @@ export const MeDocument = gql`
     id
     username
     email
-    animePost {
-      title
-      creatorId
-      rated
-      text
-      image_url
-      id
-      creatorId
-      synopsis
-      createdAt
-      creator {
-        username
-        id
-        email
-        createdAt
-      }
-    }
   }
 }
     `;

@@ -12,9 +12,10 @@ import {
   Resolver,
 } from "type-graphql";
 import { Anime } from "../Entities/FavAnime";
-import { text } from "express";
+
 import { AnimePost } from "../Entities/AnimePost";
 import { getConnection } from "typeorm";
+import { PaginatedAnimePosts } from "./animePost";
 // import { getConnection } from "typeorm";
 @InputType()
 class favAnimeInput {
@@ -125,9 +126,74 @@ export class PorfileResolver {
     const userProfile = await Profile.findOne({ userId: req.session.userId });
     return userProfile;
   }
-  @Query(() => [AnimePost])
-  async getProfilePost(@Ctx() { req }: MyContext): Promise<AnimePost[]> {
-    const userPosts = await AnimePost.find({ creatorId: req.session.userId });
-    return userPosts;
+  @Query(() => Profile, { nullable: true })
+  async getProfilev(@Arg("id", () => Int) id: number) {
+    const userProfile = await Profile.findOne({ userId: id });
+    return userProfile;
+  }
+
+  @Query(() => PaginatedAnimePosts)
+  async getProfilePosts(
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String) cursor: string,
+    @Ctx() { req }: MyContext
+  ): Promise<PaginatedAnimePosts | null> {
+    // await getRepository(User)
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect("user.animePost", "animePost")
+    //   .leftJoinAndSelect("animePost.creator", "")
+    //   .getMany();
+    const realLimit = limit;
+    const realLimitPlusOne = realLimit + 1;
+    const replacements: any[] = [realLimitPlusOne, req.session.userId];
+    let num = 2;
+    if (cursor) {
+      replacements.push(new Date(parseInt(cursor)));
+
+      num = 3;
+    }
+
+    const posts = await getConnection().query(
+      `
+    select p.*,
+
+   json_build_object(
+      'id', u.id,
+      'username', u.username,
+     ${req.session.userId ? ` 'email', u.email,` : ""}
+      'createdAt', u."createdAt"
+      ) as creator
+
+    from anime_post p 
+
+    inner join public.user u on u.id = p."creatorId"
+
+    ${
+      cursor
+        ? `where p."createdAt" < $2 and p."creatorId" = $${num}`
+        : ` where p."creatorId" = $${num}`
+    } 
+   
+
+    order by p."createdAt" DESC
+
+    limit $1
+
+    `,
+      replacements
+    );
+    // const posts = await AnimePost.find({
+    //   where: { creatorId: req.session.userId },
+    //   relations: ["creator"],
+    //   order: { createdAt: "DESC" },
+    //   take: 2,
+    // });
+    if (!posts) {
+      return null;
+    }
+    return {
+      hasMore: posts.length === realLimitPlusOne,
+      animes: posts.slice(0, realLimit),
+    };
   }
 }

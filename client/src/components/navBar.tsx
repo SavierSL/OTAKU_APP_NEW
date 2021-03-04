@@ -39,7 +39,7 @@ const NavBar: React.FC<NavBarProps> = () => {
           </NextLink>
         </Box>
         <Box>
-          <NextLink href="profile">
+          <NextLink href="/profile/[profileId]" as={`/profile/${data.me.id}`}>
             <Link
               mr="1rem"
               fontSize={{ sm: "10px", md: "12px" }}

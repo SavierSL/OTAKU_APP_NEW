@@ -53,13 +53,11 @@ export class UserResolver {
     //   .leftJoinAndSelect("user.animePost", "animePost")
     //   .leftJoinAndSelect("animePost.creator", "")
     //   .getMany();
-    const user = await User.findOne(
-      { id: req.session.userId },
-      {
-        relations: ["animePost", "animePost.creator"],
-        // order: { createdAt: "ASC" },
-      }
-    );
+    const user = await User.findOne({
+      where: { id: req.session.userId },
+      relations: ["animePost", "animePost.creator"],
+      order: { createdAt: "DESC" },
+    });
     if (!user) {
       return null;
     }

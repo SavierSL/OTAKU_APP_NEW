@@ -1,0 +1,9 @@
+query getProfilev($id: Int!) {
+  getProfilev(id: $id) {
+    id
+    bio
+    country
+    mostFavouriteCharacter
+    age
+  }
+}

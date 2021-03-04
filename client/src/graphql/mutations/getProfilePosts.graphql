@@ -1,0 +1,22 @@
+query getProfilePosts($limit: Int!, $cursor: String!) {
+  getProfilePosts(limit: $limit, cursor: $cursor) {
+    hasMore
+    animes {
+      title
+      creatorId
+      rated
+      text
+      image_url
+      id
+      creatorId
+      synopsis
+      createdAt
+      creator {
+        username
+        id
+        email
+        createdAt
+      }
+    }
+  }
+}

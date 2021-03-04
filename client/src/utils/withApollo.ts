@@ -45,6 +45,22 @@ const createClient = (ctx: NextPageContext) =>
                 };
               },
             },
+            getProfilePosts: {
+              //DONT FORGET TO ADD KEY ARGS
+              //key args of posts
+              keyArgs: [],
+              merge(
+                existing: PaginatedAnimePosts | undefined,
+                incoming: PaginatedAnimePosts
+              ): PaginatedAnimePosts {
+                //Adding new posts
+                return {
+                  ...incoming,
+                  //we need to add existing for the load more
+                  animes: [...(existing?.animes || []), ...incoming.animes],
+                };
+              },
+            },
             getAnimePostComment: {
               merge(
                 existing: PaginatedAnimeComments | undefined,
