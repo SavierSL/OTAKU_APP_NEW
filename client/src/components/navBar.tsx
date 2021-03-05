@@ -44,6 +44,11 @@ const NavBar: React.FC<NavBarProps> = () => {
               mr="1rem"
               fontSize={{ sm: "10px", md: "12px" }}
               color="#f7f6e7"
+              onClick={async () => {
+                apolloClient.cache.evict({
+                  fieldName: "getProfilePosts",
+                });
+              }}
             >
               PROFILE
             </Link>

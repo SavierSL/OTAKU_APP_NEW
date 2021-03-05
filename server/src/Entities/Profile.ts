@@ -42,6 +42,7 @@ export class Profile extends BaseEntity {
   @PrimaryColumn()
   userId!: number; //foreign key
 
+  @Field(() => User)
   @OneToOne(() => User, (user) => user.profile) // specify inverse side as a second parameter
   user: User;
 

@@ -20,6 +20,7 @@ export type Query = {
   animePosts: PaginatedAnimePosts;
   getAnimePostComment: PaginatedAnimeComments;
   me?: Maybe<User>;
+  mev?: Maybe<User>;
   getFavAnimes: PaginatedFavAnimes;
   getProfile?: Maybe<Profile>;
   getProfilev?: Maybe<Profile>;
@@ -43,12 +44,23 @@ export type QueryGetAnimePostCommentArgs = {
 };
 
 
+export type QueryMevArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetFavAnimesArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type QueryGetProfilevArgs = {
   id: Scalars['Int'];
 };
 
 
 export type QueryGetProfilePostsArgs = {
+  id: Scalars['Int'];
   cursor: Scalars['String'];
   limit: Scalars['Int'];
 };
@@ -126,6 +138,7 @@ export type Profile = {
   country: Scalars['String'];
   mostFavouriteCharacter: Scalars['String'];
   userId: Scalars['Float'];
+  user: User;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -403,7 +416,9 @@ export type GetAnimePostCommentQuery = (
   ) }
 );
 
-export type GetFavAnimesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetFavAnimesQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
 
 
 export type GetFavAnimesQuery = (
@@ -429,6 +444,7 @@ export type GetProfileQuery = (
 );
 
 export type GetProfilePostsQueryVariables = Exact<{
+  id: Scalars['Int'];
   limit: Scalars['Int'];
   cursor: Scalars['String'];
 }>;
@@ -497,6 +513,19 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email'>
+  )> }
+);
+
+export type MevQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type MevQuery = (
+  { __typename?: 'Query' }
+  & { mev?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email'>
   )> }
@@ -945,8 +974,8 @@ export type GetAnimePostCommentQueryHookResult = ReturnType<typeof useGetAnimePo
 export type GetAnimePostCommentLazyQueryHookResult = ReturnType<typeof useGetAnimePostCommentLazyQuery>;
 export type GetAnimePostCommentQueryResult = Apollo.QueryResult<GetAnimePostCommentQuery, GetAnimePostCommentQueryVariables>;
 export const GetFavAnimesDocument = gql`
-    query getFavAnimes {
-  getFavAnimes {
+    query getFavAnimes($id: Int!) {
+  getFavAnimes(id: $id) {
     favAnimeList {
       title
       image_url
@@ -968,10 +997,11 @@ export const GetFavAnimesDocument = gql`
  * @example
  * const { data, loading, error } = useGetFavAnimesQuery({
  *   variables: {
+ *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetFavAnimesQuery(baseOptions?: Apollo.QueryHookOptions<GetFavAnimesQuery, GetFavAnimesQueryVariables>) {
+export function useGetFavAnimesQuery(baseOptions: Apollo.QueryHookOptions<GetFavAnimesQuery, GetFavAnimesQueryVariables>) {
         return Apollo.useQuery<GetFavAnimesQuery, GetFavAnimesQueryVariables>(GetFavAnimesDocument, baseOptions);
       }
 export function useGetFavAnimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFavAnimesQuery, GetFavAnimesQueryVariables>) {
@@ -1017,8 +1047,8 @@ export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
 export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
 export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
 export const GetProfilePostsDocument = gql`
-    query getProfilePosts($limit: Int!, $cursor: String!) {
-  getProfilePosts(limit: $limit, cursor: $cursor) {
+    query getProfilePosts($id: Int!, $limit: Int!, $cursor: String!) {
+  getProfilePosts(id: $id, limit: $limit, cursor: $cursor) {
     hasMore
     animes {
       title
@@ -1053,6 +1083,7 @@ export const GetProfilePostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetProfilePostsQuery({
  *   variables: {
+ *      id: // value for 'id'
  *      limit: // value for 'limit'
  *      cursor: // value for 'cursor'
  *   },
@@ -1208,6 +1239,41 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const MevDocument = gql`
+    query mev($id: Int!) {
+  mev(id: $id) {
+    id
+    username
+    email
+  }
+}
+    `;
+
+/**
+ * __useMevQuery__
+ *
+ * To run a query within a React component, call `useMevQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMevQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMevQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useMevQuery(baseOptions: Apollo.QueryHookOptions<MevQuery, MevQueryVariables>) {
+        return Apollo.useQuery<MevQuery, MevQueryVariables>(MevDocument, baseOptions);
+      }
+export function useMevLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MevQuery, MevQueryVariables>) {
+          return Apollo.useLazyQuery<MevQuery, MevQueryVariables>(MevDocument, baseOptions);
+        }
+export type MevQueryHookResult = ReturnType<typeof useMevQuery>;
+export type MevLazyQueryHookResult = ReturnType<typeof useMevLazyQuery>;
+export type MevQueryResult = Apollo.QueryResult<MevQuery, MevQueryVariables>;
 export const RegisterDocument = gql`
     mutation register($username: String!, $email: String!, $password: String!) {
   register(options: {username: $username, email: $email, password: $password}) {

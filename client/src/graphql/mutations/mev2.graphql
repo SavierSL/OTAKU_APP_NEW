@@ -1,0 +1,7 @@
+query mev($id: Int!) {
+  mev(id: $id) {
+    id
+    username
+    email
+  }
+}

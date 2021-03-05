@@ -1,8 +1,11 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, Link } from "@chakra-ui/react";
 import React from "react";
-import { AnimePost, User } from "../generated/graphql";
+import { AnimePost, useGetProfilePostsQuery, User } from "../generated/graphql";
 import EditAndDeletePost from "./EditAndDeletePost";
 import Comments from "./comments";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useApolloClient } from "@apollo/client";
 
 export interface AnimePostProps {
   anime: Pick<
@@ -23,6 +26,13 @@ export interface AnimePostProps {
 }
 
 const AnimePostContainer: React.FC<AnimePostProps> = ({ anime }) => {
+  const apolloClient = useApolloClient();
+  const router = useRouter();
+  const routerId =
+    typeof router.query.profileId === "string"
+      ? parseInt(router.query.profileId)
+      : -1;
+
   return (
     <>
       <>
@@ -62,7 +72,27 @@ const AnimePostContainer: React.FC<AnimePostProps> = ({ anime }) => {
                   {anime.text}
                 </Text>
                 <Text fontSize="1.5rem" color="#fff">
-                  Posted by {anime.creator.username}
+                  Posted by
+                  <NextLink
+                    href="/profile/[profileId]"
+                    as={`/profile/${anime.creatorId}`}
+                  >
+                    <Link
+                      ml=".5rem"
+                      fontSize={{ sm: "1.2rem", md: "1.2rem" }}
+                      color="#f7f6e7"
+                      onClick={async () => {
+                        apolloClient.cache.evict({
+                          fieldName: "getProfilePosts",
+                        });
+                        apolloClient.cache.evict({
+                          fieldName: "getFavAnimes",
+                        });
+                      }}
+                    >
+                      {anime.creator.username}
+                    </Link>
+                  </NextLink>
                 </Text>
                 <Text color="#fff">{anime.title}</Text>
                 <Text color="#f7f7e8" fontSize="1.1rem">

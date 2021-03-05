@@ -1,5 +1,5 @@
-query getProfilePosts($limit: Int!, $cursor: String!) {
-  getProfilePosts(limit: $limit, cursor: $cursor) {
+query getProfilePosts($id: Int!, $limit: Int!, $cursor: String!) {
+  getProfilePosts(id: $id, limit: $limit, cursor: $cursor) {
     hasMore
     animes {
       title

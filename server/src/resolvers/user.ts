@@ -1,9 +1,11 @@
 import { User } from "../Entities/User";
 import {
   Arg,
+  ArgsType,
   Ctx,
   Field,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -57,6 +59,22 @@ export class UserResolver {
       where: { id: req.session.userId },
       relations: ["animePost", "animePost.creator"],
       order: { createdAt: "DESC" },
+    });
+    if (!user) {
+      return null;
+    }
+    return user; //
+  }
+
+  @Query(() => User, { nullable: true })
+  async mev(@Arg("id", () => Int) id: number): Promise<User | null> {
+    // await getRepository(User)
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect("user.animePost", "animePost")
+    //   .leftJoinAndSelect("animePost.creator", "")
+    //   .getMany();
+    const user = await User.findOne({
+      where: { id: id },
     });
     if (!user) {
       return null;

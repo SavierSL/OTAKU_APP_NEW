@@ -103,14 +103,14 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                             return (
                               <Box mt={2}>
                                 <Flex
-                                  bg="aliceblue"
+                                  bg="#1d1b38"
                                   borderRadius={10}
                                   alignItems="center"
                                   p={4}
                                   justifyContent="space-between"
                                   width="100%"
                                 >
-                                  <Text>{anime.title}</Text>
+                                  <Text color="white">{anime.title}</Text>
                                   <Box
                                     height="10rem"
                                     width="8rem"
@@ -128,7 +128,8 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                                 </Flex>
                                 <Button
                                   mt=".5rem"
-                                  bg="azure"
+                                  bg="#1d1b38"
+                                  color="orange"
                                   onClick={() => {
                                     const animeScore = anime.score + "";
 

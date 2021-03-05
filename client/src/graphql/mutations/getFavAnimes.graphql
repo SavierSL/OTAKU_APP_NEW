@@ -1,5 +1,5 @@
-query getFavAnimes {
-  getFavAnimes {
+query getFavAnimes($id:Int!) {
+  getFavAnimes(id: $id) {
     favAnimeList {
       title
       image_url

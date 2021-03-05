@@ -45,7 +45,9 @@ const stagger = {
 const CreateProfile: React.FC<CreateProfileProps> = () => {
   const { data: ProfileData } = useGetProfileQuery();
   const { data: MeData } = useMeQuery();
-  const { data: favAniemsData, loading } = useGetFavAnimesQuery();
+  const { data: favAniemsData, loading } = useGetFavAnimesQuery({
+    variables: { id: MeData.me.id },
+  });
   const [removeFavAnime] = useRemoveFavAnimeMutation();
   const [createProfile] = useCreateProfileMutation();
   const [updateProfile] = useUpdateProfileMutation();

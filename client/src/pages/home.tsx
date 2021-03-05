@@ -17,6 +17,7 @@ import {
   useGetFavAnimesQuery,
   useGetProfileQuery,
   useMeQuery,
+  useGetProfilePostsQuery,
 } from "../generated/graphql";
 import { useIsAuth } from "../utils/isAuth";
 import { withApollo } from "../utils/withApollo";
@@ -28,16 +29,13 @@ import EditAndDeletePost from "../components/EditAndDeletePost";
 import Layout from "../components/layout";
 import { motion } from "framer-motion";
 import AnimePostContainer from "../components/animeContainerPost";
+import { homeIntro } from "../components/motionComponents";
 
 export interface IndexProps {}
 const MotionBox = chakra(motion.div);
 
 const Home: React.FC<IndexProps> = () => {
   const { isOpen, onToggle } = useDisclosure();
-  const {
-    data: favAniemsData,
-    loading: favAnimeLoading,
-  } = useGetFavAnimesQuery();
   const { data: ProfileData } = useGetProfileQuery();
   const router = useRouter();
   const { data: MeData, loading: MeLoading } = useMeQuery();
@@ -48,7 +46,12 @@ const Home: React.FC<IndexProps> = () => {
       cursor: "",
     },
   });
+  const {
+    data: favAniemsData,
+    loading: favAnimeLoading,
+  } = useGetFavAnimesQuery({ variables: { id: MeData?.me?.id } });
   const [topAnimeLists, setTopAnimeLists] = useState([]);
+
   const getTopAnimes = async () => {
     const topAnimes = await fetch(
       "https://jikan1.p.rapidapi.com/top/anime/1/upcoming",
@@ -76,26 +79,6 @@ const Home: React.FC<IndexProps> = () => {
     const animeLists = getTopAnimes().then((res) => setTopAnimeLists(res));
   }, []);
   console.log(topAnimeLists);
-
-  const homeIntro = {
-    initial: {
-      x: -100,
-    },
-    animate: {
-      x: 0,
-      transition: {
-        ease: [0.6, -0.05, 0.01, 0.99],
-      },
-    },
-  };
-
-  const stagger = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
 
   return (
     <MotionBox

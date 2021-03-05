@@ -71,9 +71,11 @@ export class PorfileResolver {
     return false;
   }
   @Query(() => PaginatedFavAnimes)
-  async getFavAnimes(@Ctx() { req }: MyContext): Promise<PaginatedFavAnimes> {
+  async getFavAnimes(
+    @Arg("id", () => Int) id: number
+  ): Promise<PaginatedFavAnimes> {
     const favAnimes = await Anime.find({
-      where: { fanId: req.session.userId },
+      where: { fanId: id },
     });
     return {
       favAnimeList: favAnimes,
@@ -136,7 +138,7 @@ export class PorfileResolver {
   async getProfilePosts(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String) cursor: string,
-    @Ctx() { req }: MyContext
+    @Arg("id", () => Int) id: number
   ): Promise<PaginatedAnimePosts | null> {
     // await getRepository(User)
     //   .createQueryBuilder("user")
@@ -145,11 +147,10 @@ export class PorfileResolver {
     //   .getMany();
     const realLimit = limit;
     const realLimitPlusOne = realLimit + 1;
-    const replacements: any[] = [realLimitPlusOne, req.session.userId];
+    const replacements: any[] = [realLimitPlusOne, id];
     let num = 2;
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
-
       num = 3;
     }
 
@@ -160,7 +161,7 @@ export class PorfileResolver {
    json_build_object(
       'id', u.id,
       'username', u.username,
-     ${req.session.userId ? ` 'email', u.email,` : ""}
+     ${id ? ` 'email', u.email,` : ""}
       'createdAt', u."createdAt"
       ) as creator
 
@@ -170,7 +171,7 @@ export class PorfileResolver {
 
     ${
       cursor
-        ? `where p."createdAt" < $2 and p."creatorId" = $${num}`
+        ? `where p."creatorId" = $2 and p."createdAt" < $${num}`
         : ` where p."creatorId" = $${num}`
     } 
    
